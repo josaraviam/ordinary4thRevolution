@@ -2,6 +2,10 @@
 # FastAPI app entry point // Smart Health Monitoring System
 
 from contextlib import asynccontextmanager
+# Main entry point for the API
+# REST + GraphQL + WebSockets
+# Built with FastAPI because... well, it's fast (easier) and I like it :)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -47,31 +51,33 @@ app = FastAPI(
 )
 
 
-# CORS middleware // allows Node-RED dashboard to call API
+# CORS middleware - Who can talk to my API (especially Node-RED)
+# Wildcard config because WebSockets can be picky about origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins.split(","),
+    allow_origins=["*"],  # Allow all origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 
-# Register REST routers under /api prefix
-app.include_router(health_router, prefix="/api")
-app.include_router(auth_router, prefix="/api")
-app.include_router(patients_router, prefix="/api")
-app.include_router(alerts_router, prefix="/api")
-app.include_router(overview_router, prefix="/api")
-app.include_router(reports_router, prefix="/api")
-app.include_router(settings_router, prefix="/api")
+# Routes
+app.include_router(health_router, prefix="/api")      # Health checks (am I alive?) I hope so
+app.include_router(auth_router, prefix="/api")        # Login/JWT stuff (authentication)  
+app.include_router(patients_router, prefix="/api")    # Patient management (CRUD + vitals)
+app.include_router(alerts_router, prefix="/api")      # Alert handling (critical vitals)
+app.include_router(overview_router, prefix="/api")    # Dashboard KPIs and summaries
+app.include_router(reports_router, prefix="/api")     # Export & analytics (reports, stats)
+app.include_router(settings_router, prefix="/api")    # Threshold config and user prefs
 
-# Register GraphQL router at /graphql
-# Supports queries, mutations, and WebSocket subscriptions
+# GraphQL endpoint - because sometimes we are gonna need more flexibility than REST
+# Also handles WebSocket subscriptions
 app.include_router(graphql_router, prefix="/graphql")
 
 
-# Root endpoint
+# Root endpoint - just saying hello (nothing fancy here)
 @app.get("/")
 async def root():
     """API info // redirect to docs"""

@@ -1,5 +1,6 @@
 # api/rest/auth.py
-# Auth endpoints // login & register
+# Authentication API routes - login/register stuff
+# Keep it simple: register, login, get JWT token, profit!
 
 from fastapi import APIRouter, HTTPException, status
 
@@ -10,7 +11,7 @@ from domain.exceptions.custom_exceptions import (
     UserAlreadyExistsError,
 )
 
-
+# Router for all auth-related endpoints
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
@@ -18,11 +19,14 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 async def register(user_data: UserCreate):
     """
     POST /api/auth/register
-    Create new user account
+    
+    Create new user account - pretty straightforward stuff.
+    Returns user info (without password obviously).
     """
     try:
         return await auth_service.register(user_data)
     except UserAlreadyExistsError as e:
+        # Username already taken - happens all the time
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=e.message
@@ -33,7 +37,9 @@ async def register(user_data: UserCreate):
 async def login(credentials: UserLogin):
     """
     POST /api/auth/login
-    Authenticate and get JWT token
+    
+    Login with username/password, get JWT token back.
+    Token is what you use for protected endpoints.
     """
     try:
         return await auth_service.login(credentials.username, credentials.password)

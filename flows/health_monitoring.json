@@ -1,2153 +1,2911 @@
 [
-  {
-    "id": "smart_health_flow",
-    "type": "tab",
-    "label": "Smart Health Dashboard",
-    "disabled": false,
-    "info": "Smart Health Monitoring System - Simulation + Dashboard wired to industrialapi.savimind.com"
-  },
-  {
-    "id": "global_config_smart_health",
-    "type": "global-config",
-    "env": [],
-    "modules": {
-      "node-red-dashboard": "3.6.6",
-      "node-red-node-ui-table": "0.4.5"
+    {
+        "id": "14ce13e3b5baf506",
+        "type": "tab",
+        "label": "Smart Health Dashboard - Final Project",
+        "disabled": false,
+        "info": "Smart Health Monitoring System - Simulation + Dashboard wired to industrialapi.savimind.com"
+    },
+    {
+        "id": "2e1381bc8dec6e9f",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Attach Auth Header (template)",
+        "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – protected endpoint may return 401');\n}\nif (msg.url) {\n    node.status({ fill: \"blue\", shape: \"dot\", text: `${msg.method || 'GET'} ${msg.url}` });\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 20,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a7b509f84102313f",
+        "type": "ui_text_input",
+        "z": "14ce13e3b5baf506",
+        "name": "Username",
+        "label": "Username",
+        "tooltip": "",
+        "group": "35b82d63f83dc195",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "mode": "text",
+        "delay": 0,
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 150,
+        "y": 1040,
+        "wires": [
+            [
+                "3317a14069fa5f4f"
+            ]
+        ]
+    },
+    {
+        "id": "946f424101a4c02d",
+        "type": "ui_text_input",
+        "z": "14ce13e3b5baf506",
+        "name": "Password",
+        "label": "Password",
+        "tooltip": "",
+        "group": "35b82d63f83dc195",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "mode": "password",
+        "delay": 0,
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 120,
+        "y": 1120,
+        "wires": [
+            [
+                "7b4c57c9a6a76049"
+            ]
+        ]
+    },
+    {
+        "id": "80774ab9929e7269",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Login Button",
+        "group": "35b82d63f83dc195",
+        "order": 3,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "Login",
+        "tooltip": "Authenticate and store JWT",
+        "color": "",
+        "bgcolor": "",
+        "icon": "lock_open",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 530,
+        "y": 1100,
+        "wires": [
+            [
+                "0f4c276a5b4c4448"
+            ]
+        ]
+    },
+    {
+        "id": "3317a14069fa5f4f",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Store username",
+        "func": "const usernameInput = msg.payload || '';\nglobal.set('loginUsername', usernameInput);\nnode.warn(`[LOGIN DEBUG] Username stored: \"${usernameInput}\"`);\nreturn null;",
+        "outputs": 0,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "7b4c57c9a6a76049",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Store password",
+        "func": "const passwordInput = msg.payload || '';\nglobal.set('loginPassword', passwordInput);\nnode.warn(`[LOGIN DEBUG] Password stored: \"${passwordInput}\"`);\nreturn null;",
+        "outputs": 0,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "0f4c276a5b4c4448",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Build POST /api/auth/login",
+        "func": "const username = global.get('loginUsername') || '';\nconst password = global.get('loginPassword') || '';\n\nnode.warn(`[LOGIN DEBUG] Retrieved username: \"${username}\"`);\nnode.warn(`[LOGIN DEBUG] Retrieved password: \"${password ? '***' : '(empty)'}\"`);\n\nif (!username || !password) {\n    node.warn('[LOGIN DEBUG] Validation failed - missing credentials');\n    msg.payload = 'Username and password are required.';\n    msg.loginError = true;\n    return [null, msg];\n}\n\nmsg.method = 'POST';\nmsg.url = 'https://industrialapi.savimind.com/api/auth/login';\nmsg.headers = {\n    'Content-Type': 'application/json'\n};\nmsg.payload = { username, password };\n\nnode.warn('[LOGIN DEBUG] Login request prepared successfully');\nreturn [msg, null];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 1100,
+        "wires": [
+            [
+                "b02f1db8410c064a"
+            ],
+            [
+                "e5d6a7fe7347483e"
+            ]
+        ]
+    },
+    {
+        "id": "b02f1db8410c064a",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "POST /api/auth/login",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1060,
+        "y": 1080,
+        "wires": [
+            [
+                "276ad1c2d44c4daa"
+            ]
+        ]
+    },
+    {
+        "id": "276ad1c2d44c4daa",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Handle login response",
+        "func": "const status = msg.statusCode || msg.status || 0;\nconst payload = msg.payload || {};\nconst token = payload.access_token || payload.token;\n\nif (status >= 200 && status < 300 && token) {\n    global.set(\"authToken\", token);\n    msg.payload = \"Login successful. Token stored.\";\n    msg.loginOk = true;\n} else if (status === 401) {\n    // Auto-logout on 401 Unauthorized (?)\n    global.set(\"authToken\", null);\n    global.set(\"loginUsername\", '');\n    global.set(\"loginPassword\", '');\n    msg.payload = \"Unauthorized. Session expired. Please login again.\";\n    msg.loginOk = false;\n    node.warn('[AUTH] 401 detected - auto logout triggered');\n} else {\n    global.set(\"authToken\", null);\n    const errorMessage = payload.detail || `Login failed (status ${status}).`;\n    msg.payload = errorMessage;\n    msg.loginOk = false;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1380,
+        "y": 1100,
+        "wires": [
+            [
+                "e5d6a7fe7347483e"
+            ]
+        ]
+    },
+    {
+        "id": "e5d6a7fe7347483e",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "b7fc8ab6d6c748f5",
+        "order": 1,
+        "width": 12,
+        "height": 1,
+        "name": "Login Status",
+        "label": "Status",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 2870,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "bb25a77235db3d5c",
+        "type": "ui_text_input",
+        "z": "14ce13e3b5baf506",
+        "name": "Register Username",
+        "label": "Username",
+        "tooltip": "",
+        "group": "4f3fa985e6376949",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "mode": "text",
+        "delay": 0,
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 190,
+        "y": 1200,
+        "wires": [
+            [
+                "dd13cb45fd14da29"
+            ]
+        ]
+    },
+    {
+        "id": "08caeb442fca78e0",
+        "type": "ui_text_input",
+        "z": "14ce13e3b5baf506",
+        "name": "Register Password",
+        "label": "Password",
+        "tooltip": "",
+        "group": "4f3fa985e6376949",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "mode": "password",
+        "delay": 0,
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 190,
+        "y": 1480,
+        "wires": [
+            [
+                "12bd30d25503b58a"
+            ]
+        ]
+    },
+    {
+        "id": "dd13cb45fd14da29",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Store Register Username",
+        "func": "const username = msg.payload || '';\nglobal.set('registerUsername', username);\nnode.warn(`[REGISTER] Username stored: \"${username}\"`);\nreturn null;",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "12bd30d25503b58a",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Store Register Password",
+        "func": "const password = msg.payload || '';\nglobal.set('registerPassword', password);\nnode.warn(`[REGISTER] Password stored`);\nreturn null;",
+        "outputs": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "e9deecb6aec3b661",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Register Button",
+        "group": "4f3fa985e6376949",
+        "order": 4,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "Register",
+        "tooltip": "Create new account",
+        "color": "",
+        "bgcolor": "#4CAF50",
+        "icon": "person_add",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 180,
+        "y": 1260,
+        "wires": [
+            [
+                "d9e83eb03ca6ee83"
+            ]
+        ]
+    },
+    {
+        "id": "d9e83eb03ca6ee83",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Build POST /api/auth/register",
+        "func": "const username = global.get('registerUsername') || '';\nconst email = global.get('registerEmail') || '';\nconst password = global.get('registerPassword') || '';\n\nnode.warn(`[REGISTER] Username: \"${username}\", Email: \"${email}\"`);\n\nif (!username || !password) {\n    msg.payload = 'All fields are required for registration.';\n    msg.registerError = true;\n    return [null, msg];\n}\n\nmsg.method = 'POST';\nmsg.url = 'https://industrialapi.savimind.com/api/auth/register';\nmsg.headers = {\n    'Content-Type': 'application/json'\n};\nmsg.payload = { username, email, password };\n\nnode.warn('[REGISTER] Request prepared successfully');\nreturn [msg, null];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 1260,
+        "wires": [
+            [
+                "a729f089e9b41401"
+            ],
+            [
+                "b840ceb2666861bf"
+            ]
+        ]
+    },
+    {
+        "id": "a729f089e9b41401",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "POST /api/auth/register",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 790,
+        "y": 1240,
+        "wires": [
+            [
+                "a05f2942754d578d"
+            ]
+        ]
+    },
+    {
+        "id": "a05f2942754d578d",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Handle Register Response",
+        "func": "const status = msg.statusCode || msg.status || 0;\nconst payload = msg.payload || {};\n\nif (status >= 200 && status < 300) {\n    msg.payload = 'Registration successful! You can now login.';\n    msg.registerOk = true;\n    \n    // Clears registration fields (?)\n    global.set('registerUsername', '');\n    global.set('registerEmail', '');\n    global.set('registerPassword', '');\n} else {\n    const errorMessage = payload.detail || payload.message || `Registration failed (status ${status}).`;\n    msg.payload = errorMessage;\n    msg.registerOk = false;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1160,
+        "y": 1240,
+        "wires": [
+            [
+                "b840ceb2666861bf"
+            ]
+        ]
+    },
+    {
+        "id": "b840ceb2666861bf",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "4f3fa985e6376949",
+        "order": 5,
+        "width": 12,
+        "height": 1,
+        "name": "Register Status",
+        "label": "Registration Status",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1460,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "2ffbc057b3f286b2",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Health Check",
+        "group": "b7fc8ab6d6c748f5",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "Health Check",
+        "tooltip": "Check API health status",
+        "color": "",
+        "bgcolor": "",
+        "icon": "favorite",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 140,
+        "y": 1680,
+        "wires": [
+            [
+                "31a80ef6b06f190c"
+            ]
+        ]
+    },
+    {
+        "id": "31a80ef6b06f190c",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "GET /api/health",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://industrialapi.savimind.com/api/health",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 380,
+        "y": 1680,
+        "wires": [
+            [
+                "512a86baba844045"
+            ]
+        ]
+    },
+    {
+        "id": "512a86baba844045",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Parse Health Response",
+        "func": "const status = msg.statusCode || msg.status || 0;\nconst payload = msg.payload || {};\n\nif (status >= 200 && status < 300) {\n    const healthStatus = payload.status || 'unknown';\n    const timestamp = payload.timestamp || new Date().toISOString();\n    msg.payload = `API Health: ${healthStatus} (checked at ${new Date(timestamp).toLocaleTimeString()})`;\n    msg.healthOk = true;\n} else {\n    msg.payload = `API Health Check Failed (status ${status})`;\n    msg.healthOk = false;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 1680,
+        "wires": [
+            [
+                "9e03e93fa9d49d24"
+            ]
+        ]
+    },
+    {
+        "id": "9e03e93fa9d49d24",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "b7fc8ab6d6c748f5",
+        "order": 3,
+        "width": 9,
+        "height": 1,
+        "name": "Health Status",
+        "label": "API Health",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 980,
+        "y": 1680,
+        "wires": []
+    },
+    {
+        "id": "ef5da7514fbdcb04",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Logout Button",
+        "group": "b7fc8ab6d6c748f5",
+        "order": 4,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "Logout",
+        "tooltip": "Clear session and logout",
+        "color": "",
+        "bgcolor": "#f44336",
+        "icon": "exit_to_app",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 2400,
+        "y": 1620,
+        "wires": [
+            [
+                "078c974fd0aaccb2"
+            ]
+        ]
+    },
+    {
+        "id": "078c974fd0aaccb2",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Clear Session",
+        "func": "// Clears all authentication data (?)\nglobal.set('authToken', null);\nglobal.set('loginUsername', '');\nglobal.set('loginPassword', '');\n\nnode.warn('[LOGOUT] Session cleared');\n\nmsg.payload = 'Logged out successfully. Please login again.';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2620,
+        "y": 1620,
+        "wires": [
+            [
+                "e5d6a7fe7347483e"
+            ]
+        ]
+    },
+    {
+        "id": "93887e5c546be329",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Global 401 Interceptor",
+        "func": "// Intercepts all HTTP responses and checks for 401 (?)\nconst status = msg.statusCode || msg.status || 0;\n\nif (status === 401) {\n    node.warn('[GLOBAL AUTH] 401 Unauthorized detected - clearing session');\n    \n    // Clears auth token (?)\n    global.set('authToken', null);\n    global.set('loginUsername', '');\n    global.set('loginPassword', '');\n    \n    // Sends notification to UI (?)\n    const notificationMsg = {\n        payload: 'Session expired (401). Please login again.'\n    };\n    \n    return [msg, notificationMsg];\n}\n\nreturn [msg, null];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1680,
+        "y": 60,
+        "wires": [
+            [
+                "24866d0192ef9329"
+            ],
+            [
+                "e5d6a7fe7347483e"
+            ]
+        ]
+    },
+    {
+        "id": "4a5857cccab6dc53",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Auth → Overview KPIs",
+        "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\n\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('[Auth → Overview KPIs] No auth token set');\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 60,
+        "wires": [
+            [
+                "42ba6211bea73d2d"
+            ]
+        ]
+    },
+    {
+        "id": "99d7a29f08cfd1a0",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Auth → Patients",
+        "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 140,
+        "wires": [
+            [
+                "550fafb19b7fb824"
+            ]
+        ]
+    },
+    {
+        "id": "a6451f525e883d48",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Auth → Readings",
+        "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 300,
+        "wires": [
+            [
+                "3ff6bf38c75dbe3c"
+            ]
+        ]
+    },
+    {
+        "id": "871ba804c8da353e",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Auth → Alerts",
+        "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 360,
+        "wires": [
+            [
+                "108937c04269c048"
+            ]
+        ]
+    },
+    {
+        "id": "d324c09e77561a10",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Auth → Alert Ack",
+        "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 420,
+        "wires": [
+            [
+                "ec2f304b1bbe8fd8"
+            ]
+        ]
+    },
+    {
+        "id": "0dd6dfd63f2845c3",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Auth → Summary",
+        "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 560,
+        "wires": [
+            [
+                "ca8fa6650ecd242f"
+            ]
+        ]
+    },
+    {
+        "id": "fd398f3487201bbf",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Auth → Export CSV",
+        "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 640,
+        "wires": [
+            [
+                "0de6da22f0fc3f3f"
+            ]
+        ]
+    },
+    {
+        "id": "3fe73a4c16a16555",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Auth → Thresholds",
+        "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 740,
+        "wires": [
+            [
+                "27c574102b4462d1"
+            ]
+        ]
+    },
+    {
+        "id": "e93d5ce3187dda03",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Auth → Ingest Data",
+        "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n}\nmsg.headers['Content-Type'] = 'application/json';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 800,
+        "wires": [
+            [
+                "8a62f6f42406aed2"
+            ]
+        ]
+    },
+    {
+        "id": "22f57df3709b57c2",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Refresh Overview",
+        "group": "d57dad4fed5b53f5",
+        "order": 1,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "Refresh Overview",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "refresh",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 140,
+        "y": 100,
+        "wires": [
+            [
+                "4a5857cccab6dc53",
+                "99d7a29f08cfd1a0"
+            ]
+        ]
+    },
+    {
+        "id": "42ba6211bea73d2d",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "GET /overview/kpis",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://industrialapi.savimind.com/api/overview/kpis?window_minutes=5",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 690,
+        "y": 60,
+        "wires": [
+            [
+                "93887e5c546be329"
+            ]
+        ]
+    },
+    {
+        "id": "24866d0192ef9329",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Map KPIs to widgets",
+        "func": "const data = msg.payload || {};\n\nconst toNumberOrZero = (v) => {\n  const n = Number(v);\n  return Number.isFinite(n) ? n : 0;\n};\n\nconst patientsMsg = { payload: toNumberOrZero(data.patients_monitored) };\nconst alertsMsg   = { payload: toNumberOrZero(data.active_alerts) };\nconst avgHrMsg    = { payload: toNumberOrZero(data.average_heart_rate) };\n\nreturn [patientsMsg, alertsMsg, avgHrMsg];",
+        "outputs": 3,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2020,
+        "y": 60,
+        "wires": [
+            [
+                "81d467af26d83272"
+            ],
+            [
+                "087108b57e74959b"
+            ],
+            [
+                "f3745a2f6cea7a9b"
+            ]
+        ]
+    },
+    {
+        "id": "81d467af26d83272",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "d57dad4fed5b53f5",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "name": "Patients Monitored",
+        "label": "Patients Monitored",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 2310,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "087108b57e74959b",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "d57dad4fed5b53f5",
+        "order": 3,
+        "width": 3,
+        "height": 1,
+        "name": "Active Alerts",
+        "label": "Active Alerts",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 2290,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "f3745a2f6cea7a9b",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "d57dad4fed5b53f5",
+        "order": 4,
+        "width": 3,
+        "height": 1,
+        "name": "Average HR (5 min)",
+        "label": "Avg HR (5 min)",
+        "format": "{{msg.payload}} bpm",
+        "layout": "row-spread",
+        "className": "",
+        "x": 2310,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "550fafb19b7fb824",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "GET /patients",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://industrialapi.savimind.com/api/patients",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 620,
+        "y": 140,
+        "wires": [
+            [
+                "eed9bb44ee20f1ff"
+            ]
+        ]
+    },
+    {
+        "id": "eed9bb44ee20f1ff",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Map Patients to table",
+        "func": "const body = msg.payload || {};\nmsg.payload = Array.isArray(body.items) ? body.items : [];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 140,
+        "wires": [
+            [
+                "102dba865007fdbd"
+            ]
+        ]
+    },
+    {
+        "id": "102dba865007fdbd",
+        "type": "ui_table",
+        "z": "14ce13e3b5baf506",
+        "group": "95172dfaee67d126",
+        "name": "Patients Table",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "columns": [
+            {
+                "field": "patient_id",
+                "title": "Patient ID",
+                "width": "120"
+            },
+            {
+                "field": "patient_name",
+                "title": "Name",
+                "width": "120"
+            },
+            {
+                "field": "status",
+                "title": "Status",
+                "width": "80"
+            },
+            {
+                "field": "last_heart_rate",
+                "title": "HR",
+                "width": "80"
+            },
+            {
+                "field": "last_oxygen_level",
+                "title": "SpO2",
+                "width": "80"
+            },
+            {
+                "field": "last_update",
+                "title": "Last Update",
+                "width": "180"
+            }
+        ],
+        "outputs": 1,
+        "cts": false,
+        "x": 1180,
+        "y": 160,
+        "wires": [
+            [
+                "8ca07f9910091323"
+            ]
+        ]
+    },
+    {
+        "id": "8ca07f9910091323",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Handle Patient Row Click",
+        "func": "const row = msg.payload;\nif (!row || !row.patient_id) {\n    node.warn('Clicked row missing patient_id');\n    return null;\n}\n\nflow.set('selectedPatientId', row.patient_id);\nflow.set('selectedPatientName', row.patient_name || '');\n\nconst detailMsg = {\n  payload: `Selected: ${row.patient_name || 'Unknown'} (${row.patient_id})`\n};\n\nconst readingsMsg = {\n  payload: row.patient_id\n};\n\nreturn [detailMsg, readingsMsg];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 240,
+        "wires": [
+            [
+                "c21ce2c96f4cb9bc"
+            ],
+            [
+                "b25fb24c18dae888",
+                "ea9e0b4e15625c80"
+            ]
+        ]
+    },
+    {
+        "id": "c21ce2c96f4cb9bc",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "ui_group_overview_detail",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "name": "Selected Patient",
+        "label": "Selected Patient",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 620,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "b25fb24c18dae888",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Build GET /patients/{id}/readings",
+        "func": "const patientId = msg.payload;\nif (!patientId) {\n    node.warn('No patientId provided for readings');\n    return null;\n}\n\nmsg.method = 'GET';\nmsg.url = `https://industrialapi.savimind.com/api/patients/${encodeURIComponent(patientId)}/readings?limit=10`;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 280,
+        "wires": [
+            [
+                "a6451f525e883d48"
+            ]
+        ]
+    },
+    {
+        "id": "3ff6bf38c75dbe3c",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "GET /patients/{id}/readings",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 1140,
+        "y": 260,
+        "wires": [
+            [
+                "398a231e7cd22646"
+            ]
+        ]
+    },
+    {
+        "id": "398a231e7cd22646",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Map readings → mini chart",
+        "func": "// Map readings → mini chart (FIX)\nconst body = msg.payload || {};\nconst readings = Array.isArray(body.items) ? body.items : [];\n\n// ordenar por timestamp\nreadings.sort((a, b) => {\n    const timeA = new Date(a.timestamp).getTime();\n    const timeB = new Date(b.timestamp).getTime();\n    return timeA - timeB;\n});\n\n// Para ui_chart: payload = número, timestamp = millis\nconst msgs = readings.map(r => {\n    const hr = Number(r.heart_rate) || 0;\n    const t = new Date(r.timestamp).getTime();\n\n    return {\n        payload: hr,        \n        timestamp: t       \n\n    };\n});\n\nreturn [msgs];\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1440,
+        "y": 260,
+        "wires": [
+            [
+                "8167c8165ebd8479",
+                "1f5a8f4c644a3516"
+            ]
+        ]
+    },
+    {
+        "id": "8167c8165ebd8479",
+        "type": "ui_chart",
+        "z": "14ce13e3b5baf506",
+        "name": "Patient HR (Last 10)",
+        "group": "ui_group_overview_detail",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Heart Rate (Last 10)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "40",
+        "ymax": "180",
+        "removeOlder": 10,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1720,
+        "y": 260,
+        "wires": [
+            [
+                "eceeec40906f7f2f"
+            ]
+        ]
+    },
+    {
+        "id": "ea65f84ce8660322",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Refresh Alerts",
+        "group": "c19464ddaebff7b9",
+        "order": 1,
+        "width": 3,
+        "height": 1,
+        "passthru": false,
+        "label": "Refresh Alerts",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "refresh",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 150,
+        "y": 360,
+        "wires": [
+            [
+                "871ba804c8da353e"
+            ]
+        ]
+    },
+    {
+        "id": "108937c04269c048",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "GET /alerts?status=ACTIVE",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://industrialapi.savimind.com/api/alerts?status=ACTIVE",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 560,
+        "y": 320,
+        "wires": [
+            [
+                "5d9a373be96e4849"
+            ]
+        ]
+    },
+    {
+        "id": "5d9a373be96e4849",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Map alerts to table",
+        "func": "const body = msg.payload || {};\nmsg.payload = Array.isArray(body.items) ? body.items : [];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 360,
+        "wires": [
+            [
+                "cb18170b9bc7da4e"
+            ]
+        ]
+    },
+    {
+        "id": "cb18170b9bc7da4e",
+        "type": "ui_table",
+        "z": "14ce13e3b5baf506",
+        "group": "c19464ddaebff7b9",
+        "name": "Alerts Table",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "columns": [
+            {
+                "field": "alert_id",
+                "title": "Alert ID",
+                "width": "120"
+            },
+            {
+                "field": "patient_id",
+                "title": "Patient",
+                "width": "120"
+            },
+            {
+                "field": "metric",
+                "title": "Metric",
+                "width": "80"
+            },
+            {
+                "field": "type",
+                "title": "Type",
+                "width": "80"
+            },
+            {
+                "field": "value",
+                "title": "Value",
+                "width": "80"
+            },
+            {
+                "field": "created_at",
+                "title": "Created",
+                "width": "180"
+            }
+        ],
+        "outputs": 1,
+        "cts": false,
+        "x": 970,
+        "y": 360,
+        "wires": [
+            [
+                "91f596e366d67216"
+            ]
+        ]
+    },
+    {
+        "id": "91f596e366d67216",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Handle Alert Row Click",
+        "func": "const row = msg.payload;\nif (!row || !row.alert_id) {\n  node.warn('Clicked row missing alert_id');\n  return null;\n}\nflow.set('selectedAlertId', row.alert_id);\nmsg.payload = `Selected alert: ${row.alert_id} (patient: ${row.patient_id || 'N/A'})`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1230,
+        "y": 360,
+        "wires": [
+            [
+                "b88e4d30540008e5"
+            ]
+        ]
+    },
+    {
+        "id": "b88e4d30540008e5",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "4ba1c74911732181",
+        "order": 1,
+        "width": 8,
+        "height": 1,
+        "name": "Selected Alert",
+        "label": "Selected Alert",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1500,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "122540958d19be25",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Acknowledge Alert",
+        "group": "4ba1c74911732181",
+        "order": 2,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "label": "Acknowledge Alert",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "done",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 170,
+        "y": 420,
+        "wires": [
+            [
+                "8e15354d465cdcb2"
+            ]
+        ]
+    },
+    {
+        "id": "8e15354d465cdcb2",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Build POST /alerts/{id}/ack",
+        "func": "const alertId = flow.get('selectedAlertId');\nif (!alertId) {\n  node.warn('No selected alert to acknowledge');\n  return null;\n}\nmsg.method = 'POST';\nmsg.url = `https://industrialapi.savimind.com/api/alerts/${encodeURIComponent(alertId)}/ack`;\nmsg.headers = msg.headers || {};\nmsg.headers['Content-Type'] = 'application/json';\nmsg.payload = {};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 420,
+        "wires": [
+            [
+                "d324c09e77561a10"
+            ]
+        ]
+    },
+    {
+        "id": "ec2f304b1bbe8fd8",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "POST /alerts/{id}/ack",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 1060,
+        "y": 420,
+        "wires": [
+            [
+                "17e6e3e573bbb54c"
+            ]
+        ]
+    },
+    {
+        "id": "17e6e3e573bbb54c",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "After Ack → refresh",
+        "func": "// Output 1 -> Alert Status text\n// Output 2 -> Trigger refresh (GET /api/alerts/active)\n\nlet statusMsg = { payload: \"\" };\n\n// Si hubo error al hacer ACK\nif (msg.statusCode !== 200) {\n    statusMsg.payload = `Error acknowledging alert (status ${msg.statusCode})`;\n    return [statusMsg, null];\n}\n\n// Éxito\nconst body = msg.payload || {};\nconst alertId = body.alert_id || body.id || \"unknown\";\n\nstatusMsg.payload = `Alert acknowledged successfully (ID: ${alertId}). Refreshing list...`;\n\n// Mensaje para refrescar la lista de alertas activas\n// (el nodo HTTP GET ya tiene URL y método configurados, así que con\n// un msg vacío es suficiente)\nlet refreshMsg = {};\n\nreturn [statusMsg, refreshMsg];\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1360,
+        "y": 420,
+        "wires": [
+            [
+                "7a0d34cce901395c",
+                "871ba804c8da353e"
+            ]
+        ]
+    },
+    {
+        "id": "7a0d34cce901395c",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "4ba1c74911732181",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "name": "Ack Status",
+        "label": "Ack Status",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1640,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "91667ba142ad7265",
+        "type": "ui_dropdown",
+        "z": "14ce13e3b5baf506",
+        "name": "Window Selector",
+        "label": "Time Window",
+        "tooltip": "",
+        "place": "Select window",
+        "group": "9f77e04525814b53",
+        "order": 1,
+        "width": 4,
+        "height": 1,
+        "passthru": true,
+        "options": [
+            {
+                "label": "5 min",
+                "value": 5,
+                "type": "num"
+            },
+            {
+                "label": "15 min",
+                "value": 15,
+                "type": "num"
+            },
+            {
+                "label": "60 min",
+                "value": 60,
+                "type": "num"
+            }
+        ],
+        "payload": "",
+        "topic": "",
+        "x": 190,
+        "y": 500,
+        "wires": [
+            [
+                "2951531b66b6f7c5"
+            ]
+        ]
+    },
+    {
+        "id": "2951531b66b6f7c5",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Set window_minutes",
+        "func": "const val = Number(msg.payload) || 5;\nflow.set('reportWindowMinutes', val);\nmsg.payload = `Selected window: ${val} min`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 500,
+        "wires": [
+            [
+                "e2fbd2ca9afb9638"
+            ]
+        ]
+    },
+    {
+        "id": "e2fbd2ca9afb9638",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "9f77e04525814b53",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "name": "Selected Window",
+        "label": "Selected Window",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 790,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "bb9b5c85652597bc",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Run Report",
+        "group": "9f77e04525814b53",
+        "order": 3,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "label": "Run Report",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "play_arrow",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 170,
+        "y": 560,
+        "wires": [
+            [
+                "95c25309d8b5e653"
+            ]
+        ]
+    },
+    {
+        "id": "95c25309d8b5e653",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Build GET /reports/summary",
+        "func": "const windowMinutes = Number(flow.get('reportWindowMinutes')) || 5;\nmsg.method = 'GET';\nmsg.url = `https://industrialapi.savimind.com/api/reports/summary?window_minutes=${windowMinutes}`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 560,
+        "wires": [
+            [
+                "0dd6dfd63f2845c3"
+            ]
+        ]
+    },
+    {
+        "id": "ca8fa6650ecd242f",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "GET /reports/summary",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 1000,
+        "y": 560,
+        "wires": [
+            [
+                "dba4d3282825a159"
+            ]
+        ]
+    },
+    {
+        "id": "dba4d3282825a159",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Map summary → KPIs",
+        "func": "const data = msg.payload || {};\n\nconst avgHr = Number(data.average_heart_rate) || 0;\nconst minSpO2 = Number(data.minimum_oxygen_level) || 0;\nconst alertCount = Number(data.alert_count) || 0;\n\nreturn [ { payload: avgHr }, { payload: minSpO2 }, { payload: alertCount } ];",
+        "outputs": 3,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1300,
+        "y": 560,
+        "wires": [
+            [
+                "f2b86c91fe6cfe79"
+            ],
+            [
+                "b18192cd4b22bee5"
+            ],
+            [
+                "19cfe3b9f686125a"
+            ]
+        ]
+    },
+    {
+        "id": "f2b86c91fe6cfe79",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "bcc481c25d8a7f4b",
+        "order": 1,
+        "width": 4,
+        "height": 1,
+        "name": "Summary Avg HR",
+        "label": "Avg HR",
+        "format": "{{msg.payload}} bpm",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1630,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "b18192cd4b22bee5",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "bcc481c25d8a7f4b",
+        "order": 2,
+        "width": 4,
+        "height": 1,
+        "name": "Summary Min SpO2",
+        "label": "Min SpO2",
+        "format": "{{msg.payload}} %",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1640,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "19cfe3b9f686125a",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "bcc481c25d8a7f4b",
+        "order": 3,
+        "width": 4,
+        "height": 1,
+        "name": "Summary Alert Count",
+        "label": "Alert Count",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1640,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "7ac93e8697c83102",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Export CSV",
+        "group": "ae1274de13691fa1",
+        "order": 1,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "label": "Export CSV",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "file_download",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 170,
+        "y": 640,
+        "wires": [
+            [
+                "104201b93a645e74"
+            ]
+        ]
+    },
+    {
+        "id": "104201b93a645e74",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Build GET /reports/export",
+        "func": "const windowMinutes = Number(flow.get('reportWindowMinutes')) || 5;\nmsg.method = 'GET';\nmsg.url = `https://industrialapi.savimind.com/api/reports/export?window_minutes=${windowMinutes}&format=csv`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 640,
+        "wires": [
+            [
+                "fd398f3487201bbf"
+            ]
+        ]
+    },
+    {
+        "id": "0de6da22f0fc3f3f",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "GET /reports/export (csv)",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 910,
+        "y": 640,
+        "wires": [
+            [
+                "e1c9791d275d350a"
+            ]
+        ]
+    },
+    {
+        "id": "e1c9791d275d350a",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Generate CSV Download Button",
+        "func": "const csvContent = msg.payload;\nconst currentTimestamp = new Date().toISOString().replace(/[:.]/g, '-');\nconst filename = `health_report_${currentTimestamp}.csv`;\n\nconst base64EncodedCsv = Buffer.from(csvContent).toString('base64');\nconst dataUri = `data:text/csv;base64,${base64EncodedCsv}`;\n\nmsg.payload = `\n<div style=\"text-align: center; padding: 20px;\">\n    <a href=\"${dataUri}\" download=\"${filename}\" style=\"text-decoration: none;\">\n        <button style=\"\n            padding: 15px 30px;\n            background: #0094D2;\n            color: white;\n            border: none;\n            border-radius: 4px;\n            cursor: pointer;\n            font-size: 16px;\n            font-weight: bold;\n        \">\n            Download CSV (${filename})\n        </button>\n    </a>\n    <p style=\"margin-top: 10px; color: #666; font-size: 12px;\">\n        Click the button to save the report to your computer\n    </p>\n</div>\n`;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1190,
+        "y": 640,
+        "wires": [
+            [
+                "f7e0d5af78fc20f4"
+            ]
+        ]
+    },
+    {
+        "id": "f7e0d5af78fc20f4",
+        "type": "ui_template",
+        "z": "14ce13e3b5baf506",
+        "group": "ae1274de13691fa1",
+        "name": "CSV Download Button Display",
+        "order": 2,
+        "width": 12,
+        "height": 3,
+        "format": "<div ng-bind-html=\"msg.payload\"></div>",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1480,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "78d40c8a92075f9f",
+        "type": "ui_slider",
+        "z": "14ce13e3b5baf506",
+        "name": "HR High Threshold",
+        "label": "HR High Threshold",
+        "tooltip": "",
+        "group": "4e590567e2e72288",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": true,
+        "outs": "all",
+        "topic": "heart_rate_high",
+        "min": 80,
+        "max": "160",
+        "step": 5,
+        "x": 210,
+        "y": 700,
+        "wires": [
+            [
+                "8df1df230f9aeb5c"
+            ]
+        ]
+    },
+    {
+        "id": "96fe1190c6a15c1a",
+        "type": "ui_slider",
+        "z": "14ce13e3b5baf506",
+        "name": "SpO2 Low Threshold",
+        "label": "SpO2 Low Threshold",
+        "tooltip": "",
+        "group": "4e590567e2e72288",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": true,
+        "outs": "all",
+        "topic": "oxygen_level_low",
+        "min": 80,
+        "max": "100",
+        "step": 1,
+        "x": 220,
+        "y": 740,
+        "wires": [
+            [
+                "8df1df230f9aeb5c"
+            ]
+        ]
+    },
+    {
+        "id": "557643575a2cc5c4",
+        "type": "ui_slider",
+        "z": "14ce13e3b5baf506",
+        "name": "Temp High Threshold",
+        "label": "Temp High Threshold",
+        "tooltip": "",
+        "group": "4e590567e2e72288",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "passthru": true,
+        "outs": "all",
+        "topic": "body_temperature_high",
+        "min": 36,
+        "max": "41",
+        "step": 0.1,
+        "x": 220,
+        "y": 780,
+        "wires": [
+            [
+                "8df1df230f9aeb5c"
+            ]
+        ]
+    },
+    {
+        "id": "8df1df230f9aeb5c",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Collect & PUT thresholds",
+        "func": "const metricType = msg.topic;\nconst thresholdValue = Number(msg.payload);\n\nlet currentThresholds = flow.get('thresholdSettings') || {\n  heart_rate_high: 120,\n  oxygen_level_low: 92,\n  body_temperature_high: 38\n};\n\nif (!isNaN(thresholdValue) && Object.prototype.hasOwnProperty.call(currentThresholds, metricType)) {\n  currentThresholds[metricType] = thresholdValue;\n}\n\nflow.set('thresholdSettings', currentThresholds);\n\nmsg.method = 'PUT';\nmsg.url = 'https://industrialapi.savimind.com/api/settings/thresholds';\nmsg.payload = currentThresholds;\nmsg.headers = msg.headers || {};\nmsg.headers['Content-Type'] = 'application/json';\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 740,
+        "wires": [
+            [
+                "3fe73a4c16a16555"
+            ]
+        ]
+    },
+    {
+        "id": "27c574102b4462d1",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "PUT /settings/thresholds",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 1270,
+        "y": 740,
+        "wires": [
+            [
+                "441b41a048c849fa"
+            ]
+        ]
+    },
+    {
+        "id": "441b41a048c849fa",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "4e590567e2e72288",
+        "order": 4,
+        "width": 8,
+        "height": 1,
+        "name": "Threshold Status",
+        "label": "Threshold Status",
+        "format": "Updated on server",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1630,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "88bb2c0ba0f2c998",
+        "type": "ui_switch",
+        "z": "14ce13e3b5baf506",
+        "name": "Start/Stop",
+        "label": "Start Simulation",
+        "group": "95ff8ef7e974cb08",
+        "order": 1,
+        "width": 3,
+        "height": 1,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "sim_start",
+        "style": "",
+        "onvalue": "1",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "0",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "x": 150,
+        "y": 840,
+        "wires": [
+            [
+                "95d48df2f250086a"
+            ]
+        ]
+    },
+    {
+        "id": "791091799f5c86f6",
+        "type": "ui_slider",
+        "z": "14ce13e3b5baf506",
+        "name": "Frequency Slider",
+        "label": "Frequency (ms)",
+        "tooltip": "",
+        "group": "95ff8ef7e974cb08",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": true,
+        "outs": "all",
+        "topic": "sim_frequency",
+        "min": 500,
+        "max": "3000",
+        "step": 100,
+        "x": 170,
+        "y": 900,
+        "wires": [
+            [
+                "6d2856500136223f"
+            ]
+        ]
+    },
+    {
+        "id": "170584ce6c284db5",
+        "type": "ui_switch",
+        "z": "14ce13e3b5baf506",
+        "name": "Fault/Anomaly",
+        "label": "Fault/Anomaly",
+        "group": "95ff8ef7e974cb08",
+        "order": 3,
+        "width": 3,
+        "height": 1,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "sim_fault",
+        "style": "",
+        "onvalue": "1",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "0",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "x": 160,
+        "y": 960,
+        "wires": [
+            [
+                "f5b227bd122e9581"
+            ]
+        ]
+    },
+    {
+        "id": "ae81c251e2405a88",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "95ff8ef7e974cb08",
+        "order": 4,
+        "width": 8,
+        "height": 1,
+        "name": "Last POST Status",
+        "label": "Ingestion Status",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 910,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "6d2856500136223f",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Set Simulation Frequency",
+        "func": "const frequencyMs = Number(msg.payload) || 1000;\nflow.set('simIntervalMs', frequencyMs);\nmsg.payload = `Frequency set to ${frequencyMs} ms`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 900,
+        "wires": [
+            [
+                "ae81c251e2405a88"
+            ]
+        ]
+    },
+    {
+        "id": "f5b227bd122e9581",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Set Fault Mode",
+        "func": "const isFaultEnabled = msg.payload === '1';\nflow.set('simFaultMode', isFaultEnabled);\nmsg.payload = isFaultEnabled ? 'Fault/Anomaly mode: ON' : 'Fault/Anomaly mode: OFF';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 960,
+        "wires": [
+            [
+                "ae81c251e2405a88"
+            ]
+        ]
+    },
+    {
+        "id": "95d48df2f250086a",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Simulation Control",
+        "func": "const isStartRequested = msg.payload === '1';\nconst wasAlreadyRunning = flow.get('simRunning') || false;\n\nif (!isStartRequested) {\n  flow.set('simRunning', false);\n  const stopSignal = { topic: 'sim_stop', payload: 'stop' };\n  msg.payload = 'Simulation stopped';\n  return [stopSignal, msg];\n}\n\nif (isStartRequested) {\n  if (wasAlreadyRunning) {\n    return [null, { payload: 'Simulation already running' }];\n  }\n  flow.set('simRunning', true);\n  const firstTick = { topic: 'sim_tick' };\n  return [firstTick, { payload: 'Simulation started' }];\n}\n\nreturn [null, null];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 840,
+        "wires": [
+            [
+                "098faa0108a02f76"
+            ],
+            [
+                "ae81c251e2405a88"
+            ]
+        ]
+    },
+    {
+        "id": "098faa0108a02f76",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Simulation Tick Generator",
+        "func": "if (msg.topic === 'sim_stop') {\n  const timeoutId = context.get('simTimeout');\n  if (timeoutId) {\n    clearTimeout(timeoutId);\n    context.set('simTimeout', null);\n  }\n  return null;\n}\n\nconst isStillRunning = flow.get('simRunning');\nif (!isStillRunning) {\n  const timeoutId = context.get('simTimeout');\n  if (timeoutId) {\n    clearTimeout(timeoutId);\n    context.set('simTimeout', null);\n  }\n  return [null, null];\n}\n\nconst tickInterval = Number(flow.get('simIntervalMs')) || 1000;\nconst isFaultModeActive = !!flow.get('simFaultMode');\nconst authToken = global.get('authToken');\n\nconst patientDeviceIds = ['P-101', 'P-102', 'P-103', 'P-201', 'P-202'];\n\nfunction randomBetween(min, max) {\n  return Math.random() * (max - min) + min;\n}\n\nfunction generateAndSendData() {\n  const stillRunningCheck = flow.get('simRunning');\n  if (!stillRunningCheck) {\n    const timeoutId = context.get('simTimeout');\n    if (timeoutId) {\n      clearTimeout(timeoutId);\n      context.set('simTimeout', null);\n    }\n    return;\n  }\n\n  const selectedDeviceId = patientDeviceIds[Math.floor(Math.random() * patientDeviceIds.length)];\n\n  let heartRate = randomBetween(60, 100);\n  let oxygenLevel = randomBetween(94, 99);\n  let bodyTemp = randomBetween(36.4, 37.5);\n  let stepCount = Math.floor(randomBetween(1000, 8000));\n\n  const currentFaultMode = flow.get('simFaultMode');\n  if (currentFaultMode) {\n    const faultType = Math.floor(Math.random() * 3);\n    if (faultType === 0) heartRate = randomBetween(140, 190);\n    if (faultType === 1) oxygenLevel = randomBetween(80, 90);\n    if (faultType === 2) bodyTemp = randomBetween(38.5, 41);\n  }\n\n  const currentTimestamp = new Date().toISOString();\n\n  const apiPayload = {\n    deviceId: selectedDeviceId,\n    heartRate: Math.round(heartRate),\n    oxygenLevel: Math.round(oxygenLevel),\n    bodyTemperature: Number(bodyTemp.toFixed(1)),\n    steps: stepCount,\n    timestamp: currentTimestamp\n  };\n\n  const apiMessage = {\n    payload: JSON.stringify(apiPayload),\n    headers: {\n      'Content-Type': 'application/json',\n      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {})\n    }\n  };\n\n  const uiMessage = {\n    payload: {\n      heartRate: Math.round(heartRate),\n      oxygenLevel: Math.round(oxygenLevel),\n      bodyTemperature: Number(bodyTemp.toFixed(1)),\n      steps: stepCount,\n      deviceId: selectedDeviceId,\n      timestamp: currentTimestamp\n    }\n  };\n\n  node.send([apiMessage, uiMessage]);\n\n  if (flow.get('simRunning')) {\n    const updatedInterval = Number(flow.get('simIntervalMs')) || 1000;\n    const timeoutId = setTimeout(generateAndSendData, updatedInterval);\n    context.set('simTimeout', timeoutId);\n  }\n}\n\ngenerateAndSendData();\nreturn null;",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 820,
+        "wires": [
+            [
+                "e93d5ce3187dda03"
+            ],
+            [
+                "c4c0a49b08b15982"
+            ]
+        ]
+    },
+    {
+        "id": "8a62f6f42406aed2",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "POST /api/patients/data",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://industrialapi.savimind.com/api/patients/data",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 1510,
+        "y": 800,
+        "wires": [
+            [
+                "599c92d3a19dc7e6"
+            ]
+        ]
+    },
+    {
+        "id": "599c92d3a19dc7e6",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Update Ingestion Status Display",
+        "func": "const httpStatus = msg.statusCode || msg.status || 0;\nif (httpStatus >= 200 && httpStatus < 300) {\n  msg.payload = `Last POST OK (status ${httpStatus})`;\n} else {\n  msg.payload = `Last POST failed (status ${httpStatus})`;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1810,
+        "y": 920,
+        "wires": [
+            [
+                "ae81c251e2405a88"
+            ]
+        ]
+    },
+    {
+        "id": "c4c0a49b08b15982",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Route Simulation Data to UI",
+        "func": "const simulatedData = msg.payload || {};\n\nconst heartRateMsg = { payload: simulatedData.heartRate };\nconst oxygenMsg = { payload: simulatedData.oxygenLevel };\nconst tempMsg = {\n  payload: simulatedData.bodyTemperature,\n  timestamp: simulatedData.timestamp\n};\n\nreturn [heartRateMsg, oxygenMsg, tempMsg];",
+        "outputs": 3,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 860,
+        "wires": [
+            [
+                "0602bcf844f0f7e1"
+            ],
+            [
+                "9329e3ac2180cf81"
+            ],
+            [
+                "33cee9f997ac5925"
+            ]
+        ]
+    },
+    {
+        "id": "0602bcf844f0f7e1",
+        "type": "ui_gauge",
+        "z": "14ce13e3b5baf506",
+        "name": "Current HR",
+        "group": "6fed4c545d89fd79",
+        "order": 1,
+        "width": 4,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Heart Rate (bpm)",
+        "label": "bpm",
+        "format": "{{value}}",
+        "min": 40,
+        "max": "200",
+        "seg1": "",
+        "seg2": "",
+        "x": 1270,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "9329e3ac2180cf81",
+        "type": "ui_gauge",
+        "z": "14ce13e3b5baf506",
+        "name": "Current SpO2",
+        "group": "6fed4c545d89fd79",
+        "order": 2,
+        "width": 4,
+        "height": 4,
+        "gtype": "gage",
+        "title": "SpO₂ (%)",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 70,
+        "max": "100",
+        "seg1": "",
+        "seg2": "",
+        "x": 1280,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "33cee9f997ac5925",
+        "type": "ui_chart",
+        "z": "14ce13e3b5baf506",
+        "name": "Body Temperature (Rolling)",
+        "group": "d12d4f2ee5db8604",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Body Temperature (°C)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "35",
+        "ymax": "42",
+        "removeOlder": "120",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#ff7f0e",
+            "#aec7e8"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1310,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4445e8abd1e624a7",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Start Subscription",
+        "group": "f0e61fd98370bad1",
+        "order": 3,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "label": "Start HR Subscription",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "play_circle_filled",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 690,
+        "y": 1440,
+        "wires": [
+            [
+                "ac40d0b332793b97",
+                "48aab93c2b6ae9ec"
+            ]
+        ]
+    },
+    {
+        "id": "ac40d0b332793b97",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Build GraphQL Subscription Frame",
+        "func": "const authToken = global.get('authToken');\n\nconst initFrame = {\n    type: \"connection_init\",\n    payload: {}\n};\n\nif (authToken) {\n    initFrame.payload.Authorization = `Bearer ${authToken}`;\n}\n\nnode.send({ payload: JSON.stringify(initFrame) });\n\nsetTimeout(() => {\n    const subscribeFrame = {\n        id: \"1\",\n        type: \"subscribe\",\n        payload: {\n            query: `subscription {\n                liveVitals {\n                    heartRate\n                    oxygenLevel\n                    bodyTemperature\n                    timestamp\n                }\n            }`\n        }\n    };\n    \n    node.send({ payload: JSON.stringify(subscribeFrame) });\n}, 500);\n\nreturn null;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1000,
+        "y": 1440,
+        "wires": [
+            [
+                "b0923ed2ba2ccde2",
+                "1192a92e02b53072"
+            ]
+        ]
+    },
+    {
+        "id": "b0923ed2ba2ccde2",
+        "type": "websocket out",
+        "z": "14ce13e3b5baf506",
+        "name": "WS Out GraphQL",
+        "server": "",
+        "client": "151c96fc7fe75af8",
+        "x": 1530,
+        "y": 1640,
+        "wires": []
+    },
+    {
+        "id": "90cb07776ac303da",
+        "type": "websocket in",
+        "z": "14ce13e3b5baf506",
+        "name": "WS In GraphQL",
+        "server": "",
+        "client": "151c96fc7fe75af8",
+        "x": 140,
+        "y": 1620,
+        "wires": [
+            [
+                "8ea59df1bf77c71b",
+                "5cb73b046dce9e79"
+            ]
+        ]
+    },
+    {
+        "id": "8ea59df1bf77c71b",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Parse GraphQL Subscription Data",
+        "func": "// Parse GraphQL subscription frames from WS\nlet frame = msg.payload;\n\n// 1) Si viene como string, lo parseamos\nif (typeof frame === \"string\") {\n    try {\n        frame = JSON.parse(frame);\n    } catch (err) {\n        node.warn(\"No se pudo parsear JSON del WS: \" + err.message);\n        return null;\n    }\n}\n\n// 2) Ignorar mensajes de control\nif (frame.type === \"connection_ack\" || frame.type === \"ka\") {\n    return null;\n}\n\n// 3) Solo procesar mensajes de datos\n// Estructura esperada:\n// { \"id\":\"1\", \"type\":\"next\", \"payload\": { \"data\": { \"liveVitals\": {...} } } }\nif (frame.type !== \"next\" || !frame.payload || !frame.payload.data) {\n    return null;\n}\n\nconst data = frame.payload.data;\nconst vitals = data.liveVitals || data.patientVitals; // sirve para ambos casos\n\nif (!vitals) {\n    node.warn(\"Frame sin liveVitals/patientVitals: \" + JSON.stringify(frame));\n    return null;\n}\n\n// 4) Construir mensajes para cada gauge\nconst hrMsg   = { payload: vitals.heartRate };\nconst spo2Msg = { payload: vitals.oxygenLevel };\nconst tempMsg = { payload: vitals.bodyTemperature };\n\n// Opcional: log para ver que sí salen\n// node.warn(`HR=${vitals.heartRate} SpO2=${vitals.oxygenLevel} Temp=${vitals.bodyTemperature}`);\n\nreturn [hrMsg, spo2Msg, tempMsg];\n",
+        "outputs": 4,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 1620,
+        "wires": [
+            [
+                "7e7d4498f9dfcb82"
+            ],
+            [
+                "23819e9228ec199a"
+            ],
+            [
+                "1bbc25985afe0c69"
+            ],
+            [
+                "b0923ed2ba2ccde2"
+            ]
+        ]
+    },
+    {
+        "id": "7e7d4498f9dfcb82",
+        "type": "ui_chart",
+        "z": "14ce13e3b5baf506",
+        "name": "HR (GraphQL Subscription)",
+        "group": "f0e61fd98370bad1",
+        "order": 4,
+        "width": 6,
+        "height": 4,
+        "label": "Heart Rate (Live)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "40",
+        "ymax": "200",
+        "removeOlder": "120",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#2ca02c",
+            "#aec7e8"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 940,
+        "y": 1520,
+        "wires": [
+            [
+                "2b2fffe994c27441"
+            ]
+        ]
+    },
+    {
+        "id": "23819e9228ec199a",
+        "type": "ui_gauge",
+        "z": "14ce13e3b5baf506",
+        "name": "Live SpO2 (GraphQL)",
+        "group": "f0e61fd98370bad1",
+        "order": 5,
+        "width": 3,
+        "height": 3,
+        "gtype": "gage",
+        "title": "SpO₂ (Live)",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 70,
+        "max": "100",
+        "seg1": "",
+        "seg2": "",
+        "x": 940,
+        "y": 1560,
+        "wires": []
+    },
+    {
+        "id": "1bbc25985afe0c69",
+        "type": "ui_chart",
+        "z": "14ce13e3b5baf506",
+        "name": "Live Temperature (GraphQL)",
+        "group": "f0e61fd98370bad1",
+        "order": 6,
+        "width": 6,
+        "height": 4,
+        "label": "Body Temp (Live)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "35",
+        "ymax": "42",
+        "removeOlder": "60",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#ff7f0e",
+            "#aec7e8"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 960,
+        "y": 1600,
+        "wires": [
+            [
+                "2b2fffe994c27441"
+            ]
+        ]
+    },
+    {
+        "id": "0b88d461a76cbfec",
+        "type": "ui_button",
+        "z": "14ce13e3b5baf506",
+        "name": "Load via GraphQL",
+        "group": "f0e61fd98370bad1",
+        "order": 1,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "label": "Load Patients (GraphQL)",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "cloud_download",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 190,
+        "y": 1320,
+        "wires": [
+            [
+                "f9e49602a78a40c0"
+            ]
+        ]
+    },
+    {
+        "id": "f9e49602a78a40c0",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Build GraphQL Patients Query (Auth)",
+        "func": "const authToken = global.get('authToken');\n\nmsg.method = 'POST';\nmsg.url = 'https://industrialapi.savimind.com/graphql';\n\nmsg.headers = {\n  'Content-Type': 'application/json'\n};\n\nif (authToken) {\n  msg.headers.Authorization = 'Bearer ' + authToken;\n}\n\nmsg.payload = {\n  query: 'query { patients { id name heartRate oxygenLevel bodyTemperature } }'\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 1320,
+        "wires": [
+            [
+                "c3f6e64e3bed4472"
+            ]
+        ]
+    },
+    {
+        "id": "c3f6e64e3bed4472",
+        "type": "http request",
+        "z": "14ce13e3b5baf506",
+        "name": "POST /graphql (patients)",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "senderr": false,
+        "headers": {},
+        "x": 910,
+        "y": 1320,
+        "wires": [
+            [
+                "3e91f212aca38fe9"
+            ]
+        ]
+    },
+    {
+        "id": "3e91f212aca38fe9",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Map GraphQL → Table",
+        "func": "const graphqlResponse = msg.payload || {};\nconst dataWrapper = graphqlResponse.data || {};\nconst patientsList = Array.isArray(dataWrapper.patients) ? dataWrapper.patients : [];\n\nmsg.payload = patientsList.map(patient => ({\n  id: patient.id,\n  name: patient.name,\n  heartRate: patient.heartRate,\n  oxygenLevel: patient.oxygenLevel,\n  bodyTemperature: patient.bodyTemperature\n}));\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 1320,
+        "wires": [
+            [
+                "0d35fbfeab8cf4fb"
+            ]
+        ]
+    },
+    {
+        "id": "0d35fbfeab8cf4fb",
+        "type": "ui_table",
+        "z": "14ce13e3b5baf506",
+        "group": "f0e61fd98370bad1",
+        "name": "Patients (GraphQL)",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "columns": [
+            {
+                "field": "id",
+                "title": "ID",
+                "width": "80",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "name",
+                "title": "Name",
+                "width": "120",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "heartRate",
+                "title": "HR",
+                "width": "80",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "oxygenLevel",
+                "title": "SpO2",
+                "width": "80",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "bodyTemperature",
+                "title": "Temp",
+                "width": "80",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 1,
+        "cts": true,
+        "x": 1470,
+        "y": 1320,
+        "wires": [
+            [
+                "6e8e75fbc8f3d629"
+            ]
+        ]
+    },
+    {
+        "id": "ea9e0b4e15625c80",
+        "type": "debug",
+        "z": "14ce13e3b5baf506",
+        "name": "debugClickPatient",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 330,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "1f5a8f4c644a3516",
+        "type": "debug",
+        "z": "14ce13e3b5baf506",
+        "name": "debugMiniChart",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1680,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "eceeec40906f7f2f",
+        "type": "debug",
+        "z": "14ce13e3b5baf506",
+        "name": "debugVisual",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1910,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "1ef994875829e2cc",
+        "type": "function",
+        "z": "14ce13e3b5baf506",
+        "name": "Handle GraphQL Patient Click",
+        "func": "// Handle GraphQL patient row click\nconst row = msg.payload;\n\nif (!row || !row.id) {\n    node.warn('[GQL] Row click missing id');\n    return null;\n}\n\n// Store selection in flow\nflow.set('graphqlSelectedPatientId', row.id);\nflow.set('graphqlSelectedPatientName', row.name || '');\n\n// Dashboard text\nmsg.payload = `Selected (GraphQL): ${row.name || 'Unknown'} (${row.id})`;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1410,
+        "y": 1480,
+        "wires": [
+            [
+                "0567f1ed043b6ba2"
+            ]
+        ]
+    },
+    {
+        "id": "0567f1ed043b6ba2",
+        "type": "ui_text",
+        "z": "14ce13e3b5baf506",
+        "group": "f0e61fd98370bad1",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "Selected Patient (GraphQL)",
+        "label": "Selected Patient",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1660,
+        "y": 1540,
+        "wires": []
+    },
+    {
+        "id": "6e8e75fbc8f3d629",
+        "type": "link out",
+        "z": "14ce13e3b5baf506",
+        "name": "GraphQL Table Click OUT",
+        "links": [
+            "8326c11ef6bba7af"
+        ],
+        "x": 1265,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "8326c11ef6bba7af",
+        "type": "link in",
+        "z": "14ce13e3b5baf506",
+        "name": "GraphQL Table Click IN",
+        "links": [
+            "6e8e75fbc8f3d629"
+        ],
+        "x": 1355,
+        "y": 1380,
+        "wires": [
+            [
+                "1ef994875829e2cc"
+            ]
+        ]
+    },
+    {
+        "id": "48aab93c2b6ae9ec",
+        "type": "debug",
+        "z": "14ce13e3b5baf506",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1020,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "1192a92e02b53072",
+        "type": "debug",
+        "z": "14ce13e3b5baf506",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1200,
+        "y": 1540,
+        "wires": []
+    },
+    {
+        "id": "2b2fffe994c27441",
+        "type": "debug",
+        "z": "14ce13e3b5baf506",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1200,
+        "y": 1600,
+        "wires": []
+    },
+    {
+        "id": "5cb73b046dce9e79",
+        "type": "debug",
+        "z": "14ce13e3b5baf506",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 340,
+        "y": 1560,
+        "wires": []
+    },
+    {
+        "id": "35b82d63f83dc195",
+        "type": "ui_group",
+        "name": "Login",
+        "tab": "877c0271cd2daee8",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "b7fc8ab6d6c748f5",
+        "type": "ui_group",
+        "name": "Status",
+        "tab": "877c0271cd2daee8",
+        "order": 3,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "4f3fa985e6376949",
+        "type": "ui_group",
+        "name": "Register",
+        "tab": "877c0271cd2daee8",
+        "order": 2,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "d57dad4fed5b53f5",
+        "type": "ui_group",
+        "name": "KPIs",
+        "tab": "ui_tab_overview",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "95172dfaee67d126",
+        "type": "ui_group",
+        "name": "Patients",
+        "tab": "ui_tab_overview",
+        "order": 2,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "ui_group_overview_detail",
+        "type": "ui_group",
+        "name": "Patient Detail",
+        "tab": "ui_tab_overview",
+        "order": 3,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "c19464ddaebff7b9",
+        "type": "ui_group",
+        "name": "Active Alerts",
+        "tab": "a119c7bd11aa762e",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "4ba1c74911732181",
+        "type": "ui_group",
+        "name": "Alert Actions",
+        "tab": "a119c7bd11aa762e",
+        "order": 2,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "9f77e04525814b53",
+        "type": "ui_group",
+        "name": "Controls",
+        "tab": "a10bad93ef3092f6",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "bcc481c25d8a7f4b",
+        "type": "ui_group",
+        "name": "Summary",
+        "tab": "a10bad93ef3092f6",
+        "order": 2,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "ae1274de13691fa1",
+        "type": "ui_group",
+        "name": "CSV Export",
+        "tab": "a10bad93ef3092f6",
+        "order": 3,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "4e590567e2e72288",
+        "type": "ui_group",
+        "name": "Thresholds",
+        "tab": "a10bad93ef3092f6",
+        "order": 4,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "95ff8ef7e974cb08",
+        "type": "ui_group",
+        "name": "Simulation Controls",
+        "tab": "f0e4fdf7acfe2087",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "6fed4c545d89fd79",
+        "type": "ui_group",
+        "name": "Current Vitals",
+        "tab": "f0e4fdf7acfe2087",
+        "order": 2,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "d12d4f2ee5db8604",
+        "type": "ui_group",
+        "name": "REST Live Chart",
+        "tab": "f0e4fdf7acfe2087",
+        "order": 3,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "f0e61fd98370bad1",
+        "type": "ui_group",
+        "name": "GraphQL",
+        "tab": "f0e4fdf7acfe2087",
+        "order": 4,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "151c96fc7fe75af8",
+        "type": "websocket-client",
+        "path": "wss://industrialapi.savimind.com/graphql",
+        "tls": "",
+        "wholemsg": "false",
+        "hb": "0",
+        "subprotocol": "graphql-transport-ws",
+        "headers": []
+    },
+    {
+        "id": "877c0271cd2daee8",
+        "type": "ui_tab",
+        "name": "Login",
+        "icon": "person",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ui_tab_overview",
+        "type": "ui_tab",
+        "name": "Overview",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "a119c7bd11aa762e",
+        "type": "ui_tab",
+        "name": "Alerts",
+        "icon": "warning",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "a10bad93ef3092f6",
+        "type": "ui_tab",
+        "name": "Reports",
+        "icon": "bar_chart",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "f0e4fdf7acfe2087",
+        "type": "ui_tab",
+        "name": "Live Metrics",
+        "icon": "timeline",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "d4084f3844a5a81c",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6",
+            "node-red-node-ui-table": "0.4.5"
+        }
     }
-  },
-
-  {
-    "id": "ui_tab_overview",
-    "type": "ui_tab",
-    "name": "Overview",
-    "icon": "dashboard",
-    "disabled": false,
-    "hidden": false
-  },
-  {
-    "id": "ui_tab_live",
-    "type": "ui_tab",
-    "name": "Live Metrics",
-    "icon": "timeline",
-    "disabled": false,
-    "hidden": false
-  },
-  {
-    "id": "ui_tab_alerts",
-    "type": "ui_tab",
-    "name": "Alerts",
-    "icon": "warning",
-    "disabled": false,
-    "hidden": false
-  },
-  {
-    "id": "ui_tab_reports",
-    "type": "ui_tab",
-    "name": "Reports",
-    "icon": "bar_chart",
-    "disabled": false,
-    "hidden": false
-  },
-  {
-    "id": "ui_tab_login",
-    "type": "ui_tab",
-    "name": "Login",
-    "icon": "person",
-    "disabled": false,
-    "hidden": false
-  },
-
- 
-  {
-    "id": "ui_group_overview_kpis",
-    "type": "ui_group",
-    "name": "KPIs",
-    "tab": "ui_tab_overview",
-    "order": 1,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-  {
-    "id": "ui_group_overview_patients",
-    "type": "ui_group",
-    "name": "Patients",
-    "tab": "ui_tab_overview",
-    "order": 2,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-  {
-    "id": "ui_group_overview_detail",
-    "type": "ui_group",
-    "name": "Patient Detail",
-    "tab": "ui_tab_overview",
-    "order": 3,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-
-  {
-    "id": "ui_group_live_controls",
-    "type": "ui_group",
-    "name": "Simulation Controls",
-    "tab": "ui_tab_live",
-    "order": 1,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-  {
-    "id": "ui_group_live_gauges",
-    "type": "ui_group",
-    "name": "Current Vitals",
-    "tab": "ui_tab_live",
-    "order": 2,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-  {
-    "id": "ui_group_live_chart_rest",
-    "type": "ui_group",
-    "name": "REST Live Chart",
-    "tab": "ui_tab_live",
-    "order": 3,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-  {
-    "id": "ui_group_live_graphql",
-    "type": "ui_group",
-    "name": "GraphQL",
-    "tab": "ui_tab_live",
-    "order": 4,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-
-  {
-    "id": "ui_group_alerts_list",
-    "type": "ui_group",
-    "name": "Active Alerts",
-    "tab": "ui_tab_alerts",
-    "order": 1,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-  {
-    "id": "ui_group_alerts_actions",
-    "type": "ui_group",
-    "name": "Alert Actions",
-    "tab": "ui_tab_alerts",
-    "order": 2,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-
-  {
-    "id": "ui_group_reports_controls",
-    "type": "ui_group",
-    "name": "Controls",
-    "tab": "ui_tab_reports",
-    "order": 1,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-  {
-    "id": "ui_group_reports_summary",
-    "type": "ui_group",
-    "name": "Summary",
-    "tab": "ui_tab_reports",
-    "order": 2,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-  {
-    "id": "ui_group_reports_csv",
-    "type": "ui_group",
-    "name": "CSV Export",
-    "tab": "ui_tab_reports",
-    "order": 3,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-  {
-    "id": "ui_group_reports_thresholds",
-    "type": "ui_group",
-    "name": "Thresholds",
-    "tab": "ui_tab_reports",
-    "order": 4,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-
-  {
-    "id": "ui_group_login_form",
-    "type": "ui_group",
-    "name": "Login",
-    "tab": "ui_tab_login",
-    "order": 1,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-  {
-    "id": "ui_group_login_status",
-    "type": "ui_group",
-    "name": "Status",
-    "tab": "ui_tab_login",
-    "order": 2,
-    "disp": true,
-    "width": "12",
-    "collapse": false
-  },
-
-  {
-    "id": "fn_attach_auth_header_template",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Attach Auth Header (template)",
-    "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – protected endpoint may return 401');\n}\nif (msg.url) {\n    node.status({ fill: \"blue\", shape: \"dot\", text: `${msg.method || 'GET'} ${msg.url}` });\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 220,
-    "y": 40,
-    "wires": []
-  },
-
-  {
-    "id": "ui_login_username",
-    "type": "ui_text_input",
-    "z": "smart_health_flow",
-    "name": "Username",
-    "label": "Username",
-    "group": "ui_group_login_form",
-    "order": 1,
-    "width": 6,
-    "height": 1,
-    "passthru": true,
-    "mode": "text",
-    "delay": 0,
-    "topic": "",
-    "x": 200,
-    "y": 880,
-    "wires": [
-      [
-        "fn_store_username"
-      ]
-    ]
-  },
-  {
-    "id": "ui_login_password",
-    "type": "ui_text_input",
-    "z": "smart_health_flow",
-    "name": "Password",
-    "label": "Password",
-    "group": "ui_group_login_form",
-    "order": 2,
-    "width": 6,
-    "height": 1,
-    "passthru": true,
-    "mode": "password",
-    "delay": 0,
-    "topic": "",
-    "x": 200,
-    "y": 920,
-    "wires": [
-      [
-        "fn_store_password"
-      ]
-    ]
-  },
-  {
-    "id": "ui_login_button",
-    "type": "ui_button",
-    "z": "smart_health_flow",
-    "name": "Login Button",
-    "group": "ui_group_login_form",
-    "order": 3,
-    "width": 3,
-    "height": 1,
-    "passthru": false,
-    "label": "Login",
-    "tooltip": "Authenticate and store JWT",
-    "color": "",
-    "bgcolor": "",
-    "icon": "lock_open",
-    "payload": "",
-    "payloadType": "str",
-    "topic": "",
-    "x": 200,
-    "y": 960,
-    "wires": [
-      [
-        "fn_build_login_request"
-      ]
-    ]
-  },
-  {
-    "id": "fn_store_username",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Store username",
-    "func": "global.set('loginUsername', msg.payload || '');\nreturn null;",
-    "outputs": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 430,
-    "y": 880,
-    "wires": []
-  },
-  {
-    "id": "fn_store_password",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Store password",
-    "func": "global.set('loginPassword', msg.payload || '');\nreturn null;",
-    "outputs": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 430,
-    "y": 920,
-    "wires": []
-  },
-  {
-    "id": "fn_build_login_request",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Build POST /api/auth/login",
-    "func": "const username = global.get('loginUsername') || '';\nconst password = global.get('loginPassword') || '';\n\nif (!username || !password) {\n    msg.payload = 'Username and password are required.';\n    msg.loginError = true;\n    return [null, msg];\n}\n\nmsg.method = 'POST';\nmsg.url = 'https://industrialapi.savimind.com/api/auth/login';\nmsg.headers = {\n    'Content-Type': 'application/json'\n};\nmsg.payload = { username, password };\n\nreturn [msg, null];",
-    "outputs": 2,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 470,
-    "y": 960,
-    "wires": [
-      [
-        "http_login"
-      ],
-      [
-        "ui_login_status"
-      ]
-    ]
-  },
-  {
-    "id": "http_login",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "POST /api/auth/login",
-    "method": "use",
-    "ret": "obj",
-    "paytoqs": "ignore",
-    "url": "",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 760,
-    "y": 960,
-    "wires": [
-      [
-        "fn_handle_login_response"
-      ]
-    ]
-  },
-  {
-    "id": "fn_handle_login_response",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Handle login response",
-    "func": "const status = msg.statusCode || msg.status || 0;\n\nif (status >= 200 && status < 300 && msg.payload && msg.payload.token) {\n    global.set('authToken', msg.payload.token);\n    msg.payload = 'Login successful. Token stored.';\n    msg.loginOk = true;\n} else {\n    global.set('authToken', null);\n    const errorText = msg.payload && msg.payload.detail\n        ? msg.payload.detail\n        : `Login failed (status ${status}).`;\n    msg.payload = errorText;\n    msg.loginOk = false;\n}\n\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 1030,
-    "y": 960,
-    "wires": [
-      [
-        "ui_login_status"
-      ]
-    ]
-  },
-  {
-    "id": "ui_login_status",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_login_status",
-    "order": 1,
-    "width": 12,
-    "height": 1,
-    "name": "Login Status",
-    "label": "Status",
-    "format": "{{msg.payload}}",
-    "layout": "row-spread",
-    "className": "",
-    "x": 1310,
-    "y": 960,
-    "wires": []
-  },
-
-
-  {
-    "id": "fn_auth_overview_kpis",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Auth → Overview KPIs",
-    "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – protected endpoint may return 401');\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 360,
-    "y": 60,
-    "wires": [
-      [
-        "http_overview_kpis"
-      ]
-    ]
-  },
-  {
-    "id": "fn_auth_overview_patients",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Auth → Patients",
-    "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – protected endpoint may return 401');\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 360,
-    "y": 140,
-    "wires": [
-      [
-        "http_patients_list"
-      ]
-    ]
-  },
-  {
-    "id": "fn_auth_patient_readings",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Auth → Readings",
-    "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – protected endpoint may return 401');\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 820,
-    "y": 260,
-    "wires": [
-      [
-        "http_patient_readings"
-      ]
-    ]
-  },
-  {
-    "id": "fn_auth_alerts",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Auth → Alerts",
-    "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – protected endpoint may return 401');\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 360,
-    "y": 360,
-    "wires": [
-      [
-        "http_alerts_active"
-      ]
-    ]
-  },
-  {
-    "id": "fn_auth_alert_ack",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Auth → Alert Ack",
-    "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – protected endpoint may return 401');\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 800,
-    "y": 420,
-    "wires": [
-      [
-        "http_alert_ack"
-      ]
-    ]
-  },
-  {
-    "id": "fn_auth_reports_summary",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Auth → Summary",
-    "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – protected endpoint may return 401');\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 680,
-    "y": 560,
-    "wires": [
-      [
-        "http_reports_summary"
-      ]
-    ]
-  },
-  {
-    "id": "fn_auth_reports_export",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Auth → Export CSV",
-    "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – protected endpoint may return 401');\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 680,
-    "y": 640,
-    "wires": [
-      [
-        "http_reports_export"
-      ]
-    ]
-  },
-  {
-    "id": "fn_auth_thresholds",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Auth → Thresholds",
-    "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – protected endpoint may return 401');\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 720,
-    "y": 720,
-    "wires": [
-      [
-        "http_thresholds_put"
-      ]
-    ]
-  },
-  {
-    "id": "fn_auth_ingest",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Auth → Ingest Data",
-    "func": "const token = global.get('authToken');\nmsg.headers = msg.headers || {};\nif (token) {\n    msg.headers.Authorization = `Bearer ${token}`;\n} else {\n    node.warn('No auth token set – ingestion may return 401');\n}\nmsg.headers['Content-Type'] = 'application/json';\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 520,
-    "y": 740,
-    "wires": [
-      [
-        "http_ingest_data"
-      ]
-    ]
-  },
-
-
-  {
-    "id": "btn_refresh_overview",
-    "type": "ui_button",
-    "z": "smart_health_flow",
-    "name": "Refresh Overview",
-    "group": "ui_group_overview_kpis",
-    "order": 1,
-    "width": 3,
-    "height": 1,
-    "passthru": false,
-    "label": "Refresh Overview",
-    "tooltip": "",
-    "color": "",
-    "bgcolor": "",
-    "icon": "refresh",
-    "payload": "",
-    "payloadType": "str",
-    "topic": "",
-    "x": 140,
-    "y": 100,
-    "wires": [
-      [
-        "fn_auth_overview_kpis",
-        "fn_auth_overview_patients"
-      ]
-    ]
-  },
-  {
-    "id": "http_overview_kpis",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "GET /overview/kpis",
-    "method": "GET",
-    "ret": "obj",
-    "paytoqs": "ignore",
-    "url": "https://industrialapi.savimind.com/api/overview/kpis?window_minutes=5",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 610,
-    "y": 60,
-    "wires": [
-      [
-        "fn_map_kpis_to_widgets"
-      ]
-    ]
-  },
-  {
-    "id": "fn_map_kpis_to_widgets",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Map KPIs to widgets",
-    "func": "const data = msg.payload || {};\n\nconst toNumberOrZero = (v) => {\n  const n = Number(v);\n  return Number.isFinite(n) ? n : 0;\n};\n\nconst patientsMsg = { payload: toNumberOrZero(data.patients_monitored) };\nconst alertsMsg   = { payload: toNumberOrZero(data.active_alerts) };\nconst avgHrMsg    = { payload: toNumberOrZero(data.average_heart_rate) };\n\nreturn [patientsMsg, alertsMsg, avgHrMsg];",
-    "outputs": 3,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 880,
-    "y": 60,
-    "wires": [
-      [
-        "txt_kpi_patients"
-      ],
-      [
-        "txt_kpi_alerts"
-      ],
-      [
-        "txt_kpi_avghr"
-      ]
-    ]
-  },
-  {
-    "id": "txt_kpi_patients",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_overview_kpis",
-    "order": 2,
-    "width": 3,
-    "height": 1,
-    "name": "Patients Monitored",
-    "label": "Patients Monitored",
-    "format": "{{msg.payload}}",
-    "layout": "row-spread",
-    "className": "",
-    "x": 1160,
-    "y": 40,
-    "wires": []
-  },
-  {
-    "id": "txt_kpi_alerts",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_overview_kpis",
-    "order": 3,
-    "width": 3,
-    "height": 1,
-    "name": "Active Alerts",
-    "label": "Active Alerts",
-    "format": "{{msg.payload}}",
-    "layout": "row-spread",
-    "className": "",
-    "x": 1160,
-    "y": 80,
-    "wires": []
-  },
-  {
-    "id": "txt_kpi_avghr",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_overview_kpis",
-    "order": 4,
-    "width": 3,
-    "height": 1,
-    "name": "Average HR (5 min)",
-    "label": "Avg HR (5 min)",
-    "format": "{{msg.payload}} bpm",
-    "layout": "row-spread",
-    "className": "",
-    "x": 1170,
-    "y": 120,
-    "wires": []
-  },
-  {
-    "id": "http_patients_list",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "GET /patients",
-    "method": "GET",
-    "ret": "obj",
-    "paytoqs": "ignore",
-    "url": "https://industrialapi.savimind.com/api/patients",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 620,
-    "y": 140,
-    "wires": [
-      [
-        "fn_map_patients_table"
-      ]
-    ]
-  },
-  {
-    "id": "fn_map_patients_table",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Map Patients to table",
-    "func": "const body = msg.payload || {};\nmsg.payload = Array.isArray(body.items) ? body.items : [];\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 880,
-    "y": 140,
-    "wires": [
-      [
-        "tbl_patients"
-      ]
-    ]
-  },
-  {
-    "id": "tbl_patients",
-    "type": "ui_table",
-    "z": "smart_health_flow",
-    "group": "ui_group_overview_patients",
-    "name": "Patients Table",
-    "order": 1,
-    "width": 0,
-    "height": 0,
-    "columns": [
-      { "field": "patient_id", "title": "Patient ID", "width": "120" },
-      { "field": "patient_name", "title": "Name", "width": "120" },
-      { "field": "status", "title": "Status", "width": "80" },
-      { "field": "last_heart_rate", "title": "HR", "width": "80" },
-      { "field": "last_oxygen_level", "title": "SpO2", "width": "80" },
-      { "field": "last_update", "title": "Last Update", "width": "180" }
-    ],
-    "outputs": 1,
-    "cts": false,
-    "x": 1170,
-    "y": 180,
-    "wires": [
-      [
-        "fn_handle_patient_row_click"
-      ]
-    ]
-  },
-  {
-    "id": "fn_handle_patient_row_click",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Handle Patient Row Click",
-    "func": "const row = msg.payload;\nif (!row || !row.patient_id) {\n    node.warn('Clicked row missing patient_id');\n    return null;\n}\n\nflow.set('selectedPatientId', row.patient_id);\nflow.set('selectedPatientName', row.patient_name || '');\n\nconst detailMsg = {\n  payload: `Selected: ${row.patient_name || 'Unknown'} (${row.patient_id})`\n};\n\nconst readingsMsg = {\n  payload: row.patient_id\n};\n\nreturn [detailMsg, readingsMsg];",
-    "outputs": 2,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 260,
-    "y": 240,
-    "wires": [
-      [
-        "txt_selected_patient"
-      ],
-      [
-        "fn_build_patient_readings"
-      ]
-    ]
-  },
-  {
-    "id": "txt_selected_patient",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_overview_detail",
-    "order": 1,
-    "width": 6,
-    "height": 1,
-    "name": "Selected Patient",
-    "label": "Selected Patient",
-    "format": "{{msg.payload}}",
-    "layout": "row-spread",
-    "className": "",
-    "x": 600,
-    "y": 220,
-    "wires": []
-  },
-  {
-    "id": "fn_build_patient_readings",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Build GET /patients/{id}/readings",
-    "func": "const patientId = msg.payload;\nif (!patientId) {\n    node.warn('No patientId provided for readings');\n    return null;\n}\n\nmsg.method = 'GET';\nmsg.url = `https://industrialapi.savimind.com/api/patients/${encodeURIComponent(patientId)}/readings?limit=10`;\n\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 620,
-    "y": 260,
-    "wires": [
-      [
-        "fn_auth_patient_readings"
-      ]
-    ]
-  },
-  {
-    "id": "http_patient_readings",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "GET /patients/{id}/readings",
-    "method": "use",
-    "ret": "obj",
-    "paytoqs": "ignore",
-    "url": "",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 1120,
-    "y": 260,
-    "wires": [
-      [
-        "fn_map_readings_to_chart"
-      ]
-    ]
-  },
-  {
-    "id": "fn_map_readings_to_chart",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Map readings → mini chart",
-    "func": "const body = msg.payload || {};\nconst readings = Array.isArray(body.items) ? body.items : [];\n\nconst out = readings.map(r => ({\n  payload: Number(r.heart_rate) || 0,\n  timestamp: r.timestamp\n}));\n\nreturn [out];",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 1420,
-    "y": 260,
-    "wires": [
-      [
-        "chart_patient_hr_last10"
-      ]
-    ]
-  },
-  {
-    "id": "chart_patient_hr_last10",
-    "type": "ui_chart",
-    "z": "smart_health_flow",
-    "name": "Patient HR (Last 10)",
-    "group": "ui_group_overview_detail",
-    "order": 2,
-    "width": 0,
-    "height": 0,
-    "label": "Heart Rate (Last 10)",
-    "chartType": "line",
-    "legend": "false",
-    "xformat": "HH:mm:ss",
-    "interpolate": "linear",
-    "nodata": "",
-    "dot": false,
-    "ymin": "40",
-    "ymax": "180",
-    "removeOlder": 10,
-    "removeOlderPoints": "",
-    "removeOlderUnit": "60",
-    "cutout": 0,
-    "useOneColor": false,
-    "useUTC": false,
-    "colors": ["#1f77b4", "#aec7e8"],
-    "outputs": 1,
-    "useDifferentColor": false,
-    "className": "",
-    "x": 1720,
-    "y": 260,
-    "wires": []
-  },
-
-  {
-    "id": "btn_refresh_alerts",
-    "type": "ui_button",
-    "z": "smart_health_flow",
-    "name": "Refresh Alerts",
-    "group": "ui_group_alerts_list",
-    "order": 1,
-    "width": 3,
-    "height": 1,
-    "passthru": false,
-    "label": "Refresh Alerts",
-    "tooltip": "",
-    "color": "",
-    "bgcolor": "",
-    "icon": "refresh",
-    "payload": "",
-    "payloadType": "str",
-    "topic": "",
-    "x": 150,
-    "y": 360,
-    "wires": [
-      [
-        "fn_auth_alerts"
-      ]
-    ]
-  },
-  {
-    "id": "http_alerts_active",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "GET /alerts?status=ACTIVE",
-    "method": "GET",
-    "ret": "obj",
-    "paytoqs": "ignore",
-    "url": "https://industrialapi.savimind.com/api/alerts?status=ACTIVE",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 420,
-    "y": 360,
-    "wires": [
-      [
-        "fn_map_alerts_to_table"
-      ]
-    ]
-  },
-  {
-    "id": "fn_map_alerts_to_table",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Map alerts to table",
-    "func": "const body = msg.payload || {};\nmsg.payload = Array.isArray(body.items) ? body.items : [];\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 680,
-    "y": 360,
-    "wires": [
-      [
-        "tbl_alerts"
-      ]
-    ]
-  },
-  {
-    "id": "tbl_alerts",
-    "type": "ui_table",
-    "z": "smart_health_flow",
-    "group": "ui_group_alerts_list",
-    "name": "Alerts Table",
-    "order": 2,
-    "width": 0,
-    "height": 0,
-    "columns": [
-      { "field": "alert_id", "title": "Alert ID", "width": "120" },
-      { "field": "patient_id", "title": "Patient", "width": "120" },
-      { "field": "metric", "title": "Metric", "width": "80" },
-      { "field": "type", "title": "Type", "width": "80" },
-      { "field": "value", "title": "Value", "width": "80" },
-      { "field": "created_at", "title": "Created", "width": "180" }
-    ],
-    "outputs": 1,
-    "cts": false,
-    "x": 970,
-    "y": 360,
-    "wires": [
-      [
-        "fn_handle_alert_row_click"
-      ]
-    ]
-  },
-  {
-    "id": "fn_handle_alert_row_click",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Handle Alert Row Click",
-    "func": "const row = msg.payload;\nif (!row || !row.alert_id) {\n  node.warn('Clicked row missing alert_id');\n  return null;\n}\nflow.set('selectedAlertId', row.alert_id);\nmsg.payload = `Selected alert: ${row.alert_id} (patient: ${row.patient_id || 'N/A'})`;\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 1230,
-    "y": 360,
-    "wires": [
-      [
-        "txt_selected_alert"
-      ]
-    ]
-  },
-  {
-    "id": "txt_selected_alert",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_alerts_actions",
-    "order": 1,
-    "width": 8,
-    "height": 1,
-    "name": "Selected Alert",
-    "label": "Selected Alert",
-    "format": "{{msg.payload}}",
-    "layout": "row-spread",
-    "className": "",
-    "x": 1500,
-    "y": 360,
-    "wires": []
-  },
-  {
-    "id": "btn_ack_alert",
-    "type": "ui_button",
-    "z": "smart_health_flow",
-    "name": "Acknowledge Alert",
-    "group": "ui_group_alerts_actions",
-    "order": 2,
-    "width": 4,
-    "height": 1,
-    "passthru": false,
-    "label": "Acknowledge Alert",
-    "tooltip": "",
-    "color": "",
-    "bgcolor": "",
-    "icon": "done",
-    "payload": "",
-    "payloadType": "str",
-    "topic": "",
-    "x": 170,
-    "y": 420,
-    "wires": [
-      [
-        "fn_build_alert_ack"
-      ]
-    ]
-  },
-  {
-    "id": "fn_build_alert_ack",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Build POST /alerts/{id}/ack",
-    "func": "const alertId = flow.get('selectedAlertId');\nif (!alertId) {\n  node.warn('No selected alert to acknowledge');\n  return null;\n}\nmsg.method = 'POST';\nmsg.url = `https://industrialapi.savimind.com/api/alerts/${encodeURIComponent(alertId)}/ack`;\nmsg.headers = msg.headers || {};\nmsg.headers['Content-Type'] = 'application/json';\nmsg.payload = {};\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 470,
-    "y": 420,
-    "wires": [
-      [
-        "fn_auth_alert_ack"
-      ]
-    ]
-  },
-  {
-    "id": "http_alert_ack",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "POST /alerts/{id}/ack",
-    "method": "use",
-    "ret": "obj",
-    "paytoqs": "ignore",
-    "url": "",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 1060,
-    "y": 420,
-    "wires": [
-      [
-        "fn_handle_ack_response"
-      ]
-    ]
-  },
-  {
-    "id": "fn_handle_ack_response",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "After Ack → refresh",
-    "func": "const status = msg.statusCode || msg.status || 0;\nif (status >= 200 && status < 300) {\n  msg.payload = 'Alert acknowledged successfully. Refreshing list...';\n} else {\n  msg.payload = `Failed to acknowledge alert (status ${status}).`;\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 1360,
-    "y": 420,
-    "wires": [
-      [
-        "txt_ack_status",
-        "fn_auth_alerts"
-      ]
-    ]
-  },
-  {
-    "id": "txt_ack_status",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_alerts_actions",
-    "order": 3,
-    "width": 6,
-    "height": 1,
-    "name": "Ack Status",
-    "label": "Ack Status",
-    "format": "{{msg.payload}}",
-    "layout": "row-spread",
-    "className": "",
-    "x": 1640,
-    "y": 420,
-    "wires": []
-  },
-
-
-  {
-    "id": "dd_report_window",
-    "type": "ui_dropdown",
-    "z": "smart_health_flow",
-    "name": "Window Selector",
-    "label": "Time Window",
-    "tooltip": "",
-    "place": "Select window",
-    "group": "ui_group_reports_controls",
-    "order": 1,
-    "width": 4,
-    "height": 1,
-    "passthru": true,
-    "options": [
-      { "label": "5 min", "value": 5, "type": "num" },
-      { "label": "15 min", "value": 15, "type": "num" },
-      { "label": "60 min", "value": 60, "type": "num" }
-    ],
-    "payload": "",
-    "topic": "",
-    "x": 160,
-    "y": 520,
-    "wires": [
-      [
-        "fn_set_report_window"
-      ]
-    ]
-  },
-  {
-    "id": "fn_set_report_window",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Set window_minutes",
-    "func": "const val = Number(msg.payload) || 5;\nflow.set('reportWindowMinutes', val);\nmsg.payload = `Selected window: ${val} min`;\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 450,
-    "y": 520,
-    "wires": [
-      [
-        "txt_selected_window"
-      ]
-    ]
-  },
-  {
-    "id": "txt_selected_window",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_reports_controls",
-    "order": 2,
-    "width": 6,
-    "height": 1,
-    "name": "Selected Window",
-    "label": "Selected Window",
-    "format": "{{msg.payload}}",
-    "layout": "row-spread",
-    "className": "",
-    "x": 760,
-    "y": 520,
-    "wires": []
-  },
-  {
-    "id": "btn_run_report",
-    "type": "ui_button",
-    "z": "smart_health_flow",
-    "name": "Run Report",
-    "group": "ui_group_reports_controls",
-    "order": 3,
-    "width": 4,
-    "height": 1,
-    "passthru": false,
-    "label": "Run Report",
-    "tooltip": "",
-    "color": "",
-    "bgcolor": "",
-    "icon": "play_arrow",
-    "payload": "",
-    "payloadType": "str",
-    "topic": "",
-    "x": 170,
-    "y": 560,
-    "wires": [
-      [
-        "fn_build_reports_summary"
-      ]
-    ]
-  },
-  {
-    "id": "fn_build_reports_summary",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Build GET /reports/summary",
-    "func": "const windowMinutes = Number(flow.get('reportWindowMinutes')) || 5;\nmsg.method = 'GET';\nmsg.url = `https://industrialapi.savimind.com/api/reports/summary?window_minutes=${windowMinutes}`;\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 480,
-    "y": 560,
-    "wires": [
-      [
-        "fn_auth_reports_summary"
-      ]
-    ]
-  },
-  {
-    "id": "http_reports_summary",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "GET /reports/summary",
-    "method": "use",
-    "ret": "obj",
-    "paytoqs": "ignore",
-    "url": "",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 820,
-    "y": 560,
-    "wires": [
-      [
-        "fn_map_summary_kpis"
-      ]
-    ]
-  },
-  {
-    "id": "fn_map_summary_kpis",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Map summary → KPIs",
-    "func": "const data = msg.payload || {};\n\nconst avgHr = Number(data.average_heart_rate) || 0;\nconst minSpO2 = Number(data.minimum_oxygen_level) || 0;\nconst alertCount = Number(data.alert_count) || 0;\n\nreturn [ { payload: avgHr }, { payload: minSpO2 }, { payload: alertCount } ];",
-    "outputs": 3,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 1130,
-    "y": 560,
-    "wires": [
-      [
-        "txt_summary_avghr"
-      ],
-      [
-        "txt_summary_minspo2"
-      ],
-      [
-        "txt_summary_alertcount"
-      ]
-    ]
-  },
-  {
-    "id": "txt_summary_avghr",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_reports_summary",
-    "order": 1,
-    "width": 4,
-    "height": 1,
-    "name": "Summary Avg HR",
-    "label": "Avg HR",
-    "format": "{{msg.payload}} bpm",
-    "layout": "row-spread",
-    "className": "",
-    "x": 1460,
-    "y": 520,
-    "wires": []
-  },
-  {
-    "id": "txt_summary_minspo2",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_reports_summary",
-    "order": 2,
-    "width": 4,
-    "height": 1,
-    "name": "Summary Min SpO2",
-    "label": "Min SpO2",
-    "format": "{{msg.payload}} %",
-    "layout": "row-spread",
-    "className": "",
-    "x": 1470,
-    "y": 560,
-    "wires": []
-  },
-  {
-    "id": "txt_summary_alertcount",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_reports_summary",
-    "order": 3,
-    "width": 4,
-    "height": 1,
-    "name": "Summary Alert Count",
-    "label": "Alert Count",
-    "format": "{{msg.payload}}",
-    "layout": "row-spread",
-    "className": "",
-    "x": 1480,
-    "y": 600,
-    "wires": []
-  },
-  {
-    "id": "btn_export_csv",
-    "type": "ui_button",
-    "z": "smart_health_flow",
-    "name": "Export CSV",
-    "group": "ui_group_reports_csv",
-    "order": 1,
-    "width": 4,
-    "height": 1,
-    "passthru": false,
-    "label": "Export CSV",
-    "tooltip": "",
-    "color": "",
-    "bgcolor": "",
-    "icon": "file_download",
-    "payload": "",
-    "payloadType": "str",
-    "topic": "",
-    "x": 170,
-    "y": 640,
-    "wires": [
-      [
-        "fn_build_reports_export"
-      ]
-    ]
-  },
-  {
-    "id": "fn_build_reports_export",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Build GET /reports/export",
-    "func": "const windowMinutes = Number(flow.get('reportWindowMinutes')) || 5;\nmsg.method = 'GET';\nmsg.url = `https://industrialapi.savimind.com/api/reports/export?window_minutes=${windowMinutes}&format=csv`;\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 480,
-    "y": 640,
-    "wires": [
-      [
-        "fn_auth_reports_export"
-      ]
-    ]
-  },
-  {
-    "id": "http_reports_export",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "GET /reports/export (csv)",
-    "method": "use",
-    "ret": "txt",
-    "paytoqs": "ignore",
-    "url": "",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 840,
-    "y": 640,
-    "wires": [
-      [
-        "txt_csv_output"
-      ]
-    ]
-  },
-  {
-    "id": "txt_csv_output",
-    "type": "ui_text_input",
-    "z": "smart_health_flow",
-    "name": "CSV Output",
-    "label": "CSV Output",
-    "group": "ui_group_reports_csv",
-    "order": 2,
-    "width": 12,
-    "height": 4,
-    "passthru": false,
-    "mode": "text",
-    "delay": 0,
-    "topic": "",
-    "x": 1160,
-    "y": 640,
-    "wires": []
-  },
-
-  {
-    "id": "slider_hr_high",
-    "type": "ui_slider",
-    "z": "smart_health_flow",
-    "name": "HR High Threshold",
-    "label": "HR High Threshold",
-    "tooltip": "",
-    "group": "ui_group_reports_thresholds",
-    "order": 1,
-    "width": 6,
-    "height": 1,
-    "passthru": true,
-    "outs": "all",
-    "topic": "heart_rate_high",
-    "min": 80,
-    "max": "160",
-    "step": 5,
-    "x": 210,
-    "y": 720,
-    "wires": [
-      [
-        "fn_collect_thresholds"
-      ]
-    ]
-  },
-  {
-    "id": "slider_spo2_low",
-    "type": "ui_slider",
-    "z": "smart_health_flow",
-    "name": "SpO2 Low Threshold",
-    "label": "SpO2 Low Threshold",
-    "tooltip": "",
-    "group": "ui_group_reports_thresholds",
-    "order": 2,
-    "width": 6,
-    "height": 1,
-    "passthru": true,
-    "outs": "all",
-    "topic": "oxygen_level_low",
-    "min": 80,
-    "max": "100",
-    "step": 1,
-    "x": 220,
-    "y": 760,
-    "wires": [
-      [
-        "fn_collect_thresholds"
-      ]
-    ]
-  },
-  {
-    "id": "slider_temp_high",
-    "type": "ui_slider",
-    "z": "smart_health_flow",
-    "name": "Temp High Threshold",
-    "label": "Temp High Threshold",
-    "tooltip": "",
-    "group": "ui_group_reports_thresholds",
-    "order": 3,
-    "width": 6,
-    "height": 1,
-    "passthru": true,
-    "outs": "all",
-    "topic": "body_temperature_high",
-    "min": 36,
-    "max": "41",
-    "step": 0.1,
-    "x": 220,
-    "y": 800,
-    "wires": [
-      [
-        "fn_collect_thresholds"
-      ]
-    ]
-  },
-  {
-    "id": "fn_collect_thresholds",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Collect & PUT thresholds",
-    "func": "const topic = msg.topic;\nconst value = Number(msg.payload);\n\nlet thresholds = flow.get('thresholdSettings') || {\n  heart_rate_high: 120,\n  oxygen_level_low: 92,\n  body_temperature_high: 38\n};\n\nif (!isNaN(value) && Object.prototype.hasOwnProperty.call(thresholds, topic)) {\n  thresholds[topic] = value;\n}\n\nflow.set('thresholdSettings', thresholds);\n\nmsg.method = 'PUT';\nmsg.url = 'https://industrialapi.savimind.com/api/settings/thresholds';\nmsg.payload = thresholds;\nmsg.headers = msg.headers || {};\nmsg.headers['Content-Type'] = 'application/json';\n\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 520,
-    "y": 760,
-    "wires": [
-      [
-        "fn_auth_thresholds"
-      ]
-    ]
-  },
-  {
-    "id": "http_thresholds_put",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "PUT /settings/thresholds",
-    "method": "use",
-    "ret": "obj",
-    "paytoqs": "ignore",
-    "url": "",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 880,
-    "y": 760,
-    "wires": [
-      [
-        "txt_threshold_status"
-      ]
-    ]
-  },
-  {
-    "id": "txt_threshold_status",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_reports_thresholds",
-    "order": 4,
-    "width": 8,
-    "height": 1,
-    "name": "Threshold Status",
-    "label": "Threshold Status",
-    "format": "Updated on server",
-    "layout": "row-spread",
-    "className": "",
-    "x": 1180,
-    "y": 760,
-    "wires": []
-  },
-
-
-  {
-    "id": "switch_sim_start",
-    "type": "ui_switch",
-    "z": "smart_health_flow",
-    "name": "Start/Stop",
-    "label": "Start Simulation",
-    "group": "ui_group_live_controls",
-    "order": 1,
-    "width": 3,
-    "height": 1,
-    "passthru": true,
-    "decouple": "false",
-    "topic": "sim_start",
-    "style": "",
-    "onvalue": "1",
-    "onvalueType": "str",
-    "onicon": "",
-    "oncolor": "",
-    "offvalue": "0",
-    "offvalueType": "str",
-    "officon": "",
-    "offcolor": "",
-    "animate": false,
-    "x": 150,
-    "y": 840,
-    "wires": [
-      [
-        "fn_sim_control"
-      ]
-    ]
-  },
-  {
-    "id": "slider_sim_frequency",
-    "type": "ui_slider",
-    "z": "smart_health_flow",
-    "name": "Frequency Slider",
-    "label": "Frequency (ms)",
-    "tooltip": "",
-    "group": "ui_group_live_controls",
-    "order": 2,
-    "width": 6,
-    "height": 1,
-    "passthru": true,
-    "outs": "all",
-    "topic": "sim_frequency",
-    "min": 500,
-    "max": "3000",
-    "step": 100,
-    "x": 170,
-    "y": 880,
-    "wires": [
-      [
-        "fn_set_sim_frequency"
-      ]
-    ]
-  },
-  {
-    "id": "switch_sim_fault",
-    "type": "ui_switch",
-    "z": "smart_health_flow",
-    "name": "Fault/Anomaly",
-    "label": "Fault/Anomaly",
-    "group": "ui_group_live_controls",
-    "order": 3,
-    "width": 3,
-    "height": 1,
-    "passthru": true,
-    "decouple": "false",
-    "topic": "sim_fault",
-    "style": "",
-    "onvalue": "1",
-    "onvalueType": "str",
-    "onicon": "",
-    "oncolor": "",
-    "offvalue": "0",
-    "offvalueType": "str",
-    "officon": "",
-    "offcolor": "",
-    "animate": false,
-    "x": 150,
-    "y": 920,
-    "wires": [
-      [
-        "fn_set_sim_fault"
-      ]
-    ]
-  },
-  {
-    "id": "txt_sim_status",
-    "type": "ui_text",
-    "z": "smart_health_flow",
-    "group": "ui_group_live_controls",
-    "order": 4,
-    "width": 8,
-    "height": 1,
-    "name": "Last POST Status",
-    "label": "Ingestion Status",
-    "format": "{{msg.payload}}",
-    "layout": "row-spread",
-    "className": "",
-    "x": 780,
-    "y": 840,
-    "wires": []
-  },
-  {
-    "id": "fn_set_sim_frequency",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Set Frequency",
-    "func": "const freq = Number(msg.payload) || 1000;\nflow.set('simIntervalMs', freq);\nmsg.payload = `Frequency set to ${freq} ms`;\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 450,
-    "y": 880,
-    "wires": [
-      [
-        "txt_sim_status"
-      ]
-    ]
-  },
-  {
-    "id": "fn_set_sim_fault",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Set Fault Mode",
-    "func": "const on = msg.payload === '1';\nflow.set('simFaultMode', on);\nmsg.payload = on ? 'Fault/Anomaly mode: ON' : 'Fault/Anomaly mode: OFF';\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 460,
-    "y": 920,
-    "wires": [
-      [
-        "txt_sim_status"
-      ]
-    ]
-  },
-  {
-    "id": "fn_sim_control",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Simulation Control",
-    "func": "const running = msg.payload === '1';\nconst previousTimeout = context.get('simTimeout');\n\nif (!running && previousTimeout) {\n  clearTimeout(previousTimeout);\n  context.set('simTimeout', null);\n  flow.set('simRunning', false);\n  msg.payload = 'Simulation stopped';\n  return [null, msg];\n}\n\nif (running) {\n  flow.set('simRunning', true);\n  // kick first tick\n  const tickMsg = { topic: 'sim_tick' };\n  return [tickMsg, { payload: 'Simulation started' }];\n}\n\nreturn [null, null];",
-    "outputs": 2,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 460,
-    "y": 840,
-    "wires": [
-      [
-        "fn_simulation_tick"
-      ],
-      [
-        "txt_sim_status"
-      ]
-    ]
-  },
-  {
-    "id": "fn_simulation_tick",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Simulation Tick",
-    "func": "const running = flow.get('simRunning');\nif (!running) {\n  return [null, null];\n}\n\nconst interval = Number(flow.get('simIntervalMs')) || 1000;\nconst fault = !!flow.get('simFaultMode');\n\n// 3 devices (patients)\nconst devices = ['P-101', 'P-102', 'P-103'];\nconst deviceId = devices[Math.floor(Math.random() * devices.length)];\n\nfunction baseBetween(min, max) {\n  return Math.random() * (max - min) + min;\n}\n\nlet heartRate = baseBetween(60, 100);\nlet oxygen = baseBetween(94, 99);\nlet temp = baseBetween(36.4, 37.5);\nlet steps = Math.floor(baseBetween(1000, 8000));\n\nif (fault) {\n  const mode = Math.floor(Math.random() * 3);\n  if (mode === 0) heartRate = baseBetween(140, 190);\n  if (mode === 1) oxygen = baseBetween(80, 90);\n  if (mode === 2) temp = baseBetween(38.5, 41);\n}\n\nconst now = new Date().toISOString();\n\nconst ingestMsg = {\n  payload: {\n    deviceId: deviceId,\n    heartRate: Math.round(heartRate),\n    oxygenLevel: Math.round(oxygen),\n    bodyTemperature: Number(temp.toFixed(1)),\n    steps: steps,\n    timestamp: now\n  }\n};\n\nconst uiMsg = {\n  payload: {\n    heartRate: Math.round(heartRate),\n    oxygenLevel: Math.round(oxygen),\n    bodyTemperature: Number(temp.toFixed(1)),\n    steps: steps,\n    deviceId: deviceId,\n    timestamp: now\n  }\n};\n\n// schedule next tick\nconst nodeRef = node;\nconst timeoutId = setTimeout(() => {\n  nodeRef.send([{ topic: 'sim_tick' }, null]);\n}, interval);\ncontext.set('simTimeout', timeoutId);\n\nreturn [ingestMsg, uiMsg];",
-    "outputs": 2,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 780,
-    "y": 880,
-    "wires": [
-      [
-        "fn_auth_ingest"
-      ],
-      [
-        "fn_route_sim_to_ui"
-      ]
-    ]
-  },
-  {
-    "id": "http_ingest_data",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "POST /api/patients/data",
-    "method": "POST",
-    "ret": "obj",
-    "paytoqs": "ignore",
-    "url": "https://industrialapi.savimind.com/api/patients/data",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 1040,
-    "y": 840,
-    "wires": [
-      [
-        "fn_update_ingest_status"
-      ]
-    ]
-  },
-  {
-    "id": "fn_update_ingest_status",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Update Ingestion Status",
-    "func": "const status = msg.statusCode || msg.status || 0;\nif (status >= 200 && status < 300) {\n  msg.payload = `Last POST OK (status ${status})`;\n} else {\n  msg.payload = `Last POST failed (status ${status})`;\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 1300,
-    "y": 840,
-    "wires": [
-      [
-        "txt_sim_status"
-      ]
-    ]
-  },
-  {
-    "id": "fn_route_sim_to_ui",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Route Sim → UI",
-    "func": "const data = msg.payload || {};\n\nconst hrMsg = { payload: data.heartRate };\nconst spo2Msg = { payload: data.oxygenLevel };\nconst tempMsg = {\n  payload: data.bodyTemperature,\n  timestamp: data.timestamp\n};\n\nreturn [hrMsg, spo2Msg, tempMsg];",
-    "outputs": 3,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 1060,
-    "y": 920,
-    "wires": [
-      [
-        "gauge_hr_current"
-      ],
-      [
-        "gauge_spo2_current"
-      ],
-      [
-        "chart_temp_rolling"
-      ]
-    ]
-  },
-  {
-    "id": "gauge_hr_current",
-    "type": "ui_gauge",
-    "z": "smart_health_flow",
-    "name": "Current HR",
-    "group": "ui_group_live_gauges",
-    "order": 1,
-    "width": 4,
-    "height": 4,
-    "gtype": "gage",
-    "title": "Heart Rate (bpm)",
-    "label": "bpm",
-    "format": "{{value}}",
-    "min": 40,
-    "max": "200",
-    "seg1": "",
-    "seg2": "",
-    "x": 1380,
-    "y": 900,
-    "wires": []
-  },
-  {
-    "id": "gauge_spo2_current",
-    "type": "ui_gauge",
-    "z": "smart_health_flow",
-    "name": "Current SpO2",
-    "group": "ui_group_live_gauges",
-    "order": 2,
-    "width": 4,
-    "height": 4,
-    "gtype": "gage",
-    "title": "SpO₂ (%)",
-    "label": "%",
-    "format": "{{value}}",
-    "min": 70,
-    "max": "100",
-    "seg1": "",
-    "seg2": "",
-    "x": 1380,
-    "y": 940,
-    "wires": []
-  },
-  {
-    "id": "chart_temp_rolling",
-    "type": "ui_chart",
-    "z": "smart_health_flow",
-    "name": "Body Temperature (Rolling)",
-    "group": "ui_group_live_chart_rest",
-    "order": 1,
-    "width": 0,
-    "height": 0,
-    "label": "Body Temperature (°C)",
-    "chartType": "line",
-    "legend": "false",
-    "xformat": "HH:mm:ss",
-    "interpolate": "linear",
-    "nodata": "",
-    "dot": false,
-    "ymin": "35",
-    "ymax": "42",
-    "removeOlder": "120",
-    "removeOlderPoints": "",
-    "removeOlderUnit": "60",
-    "cutout": 0,
-    "useOneColor": false,
-    "useUTC": false,
-    "colors": ["#ff7f0e", "#aec7e8"],
-    "outputs": 1,
-    "useDifferentColor": false,
-    "className": "",
-    "x": 1400,
-    "y": 980,
-    "wires": []
-  },
-
-
-  {
-    "id": "btn_graphql_patients",
-    "type": "ui_button",
-    "z": "smart_health_flow",
-    "name": "Load via GraphQL",
-    "group": "ui_group_live_graphql",
-    "order": 1,
-    "width": 4,
-    "height": 1,
-    "passthru": false,
-    "label": "Load Patients (GraphQL)",
-    "tooltip": "",
-    "color": "",
-    "bgcolor": "",
-    "icon": "cloud_download",
-    "payload": "",
-    "payloadType": "str",
-    "topic": "",
-    "x": 170,
-    "y": 1040,
-    "wires": [
-      [
-        "fn_build_graphql_patients_query"
-      ]
-    ]
-  },
-  {
-    "id": "fn_build_graphql_patients_query",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Build GraphQL Patients Query",
-    "func": "msg.method = 'POST';\nmsg.url = 'https://industrialapi.savimind.com/graphql';\nmsg.headers = {\n  'Content-Type': 'application/json'\n};\nmsg.payload = {\n  query: `query { patients { id name heartRate oxygenLevel bodyTemperature } }`\n};\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 500,
-    "y": 1040,
-    "wires": [
-      [
-        "http_graphql_query"
-      ]
-    ]
-  },
-  {
-    "id": "http_graphql_query",
-    "type": "http request",
-    "z": "smart_health_flow",
-    "name": "POST /graphql (patients)",
-    "method": "use",
-    "ret": "obj",
-    "paytoqs": "ignore",
-    "url": "",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "authType": "",
-    "senderr": false,
-    "headers": {},
-    "x": 820,
-    "y": 1040,
-    "wires": [
-      [
-        "fn_map_graphql_patients"
-      ]
-    ]
-  },
-  {
-    "id": "fn_map_graphql_patients",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Map GraphQL → Table",
-    "func": "const payload = msg.payload || {};\nconst data = payload.data || {};\nconst patients = Array.isArray(data.patients) ? data.patients : [];\n\nmsg.payload = patients.map(p => ({\n  id: p.id,\n  name: p.name,\n  heartRate: p.heartRate,\n  oxygenLevel: p.oxygenLevel,\n  bodyTemperature: p.bodyTemperature\n}));\n\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 1120,
-    "y": 1040,
-    "wires": [
-      [
-        "tbl_graphql_patients"
-      ]
-    ]
-  },
-  {
-    "id": "tbl_graphql_patients",
-    "type": "ui_table",
-    "z": "smart_health_flow",
-    "group": "ui_group_live_graphql",
-    "name": "Patients (GraphQL)",
-    "order": 2,
-    "width": 0,
-    "height": 0,
-    "columns": [
-      { "field": "id", "title": "ID", "width": "80" },
-      { "field": "name", "title": "Name", "width": "120" },
-      { "field": "heartRate", "title": "HR", "width": "80" },
-      { "field": "oxygenLevel", "title": "SpO2", "width": "80" },
-      { "field": "bodyTemperature", "title": "Temp", "width": "80" }
-    ],
-    "outputs": 0,
-    "cts": false,
-    "x": 1400,
-    "y": 1040,
-    "wires": []
-  },
-
-  {
-    "id": "ws_graphql_client",
-    "type": "websocket-client",
-    "path": "wss://industrialapi.savimind.com/graphql",
-    "tls": "",
-    "wholemsg": "false"
-  },
-  {
-    "id": "btn_start_subscription",
-    "type": "ui_button",
-    "z": "smart_health_flow",
-    "name": "Start Subscription",
-    "group": "ui_group_live_graphql",
-    "order": 3,
-    "width": 4,
-    "height": 1,
-    "passthru": false,
-    "label": "Start HR Subscription",
-    "tooltip": "",
-    "color": "",
-    "bgcolor": "",
-    "icon": "play_circle_filled",
-    "payload": "",
-    "payloadType": "str",
-    "topic": "",
-    "x": 190,
-    "y": 1080,
-    "wires": [
-      [
-        "fn_build_graphql_subscription"
-      ]
-    ]
-  },
-  {
-    "id": "fn_build_graphql_subscription",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Build GraphQL Subscription Frame",
-    "func": "msg.payload = JSON.stringify({\n  type: 'start',\n  id: 'liveVitalsSub',\n  payload: {\n    query: 'subscription { liveVitals { id heartRate oxygenLevel bodyTemperature steps } }'\n  }\n});\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 540,
-    "y": 1080,
-    "wires": [
-      [
-        "ws_out_graphql"
-      ]
-    ]
-  },
-  {
-    "id": "ws_out_graphql",
-    "type": "websocket out",
-    "z": "smart_health_flow",
-    "name": "WS Out GraphQL",
-    "server": "",
-    "client": "ws_graphql_client",
-    "x": 880,
-    "y": 1080,
-    "wires": []
-  },
-  {
-    "id": "ws_in_graphql",
-    "type": "websocket in",
-    "z": "smart_health_flow",
-    "name": "WS In GraphQL",
-    "server": "",
-    "client": "ws_graphql_client",
-    "x": 220,
-    "y": 1120,
-    "wires": [
-      [
-        "fn_parse_graphql_subscription"
-      ]
-    ]
-  },
-  {
-    "id": "fn_parse_graphql_subscription",
-    "type": "function",
-    "z": "smart_health_flow",
-    "name": "Parse Subscription Payload",
-    "func": "let data;\ntry {\n  data = JSON.parse(msg.payload);\n} catch (e) {\n  node.warn('Invalid JSON from subscription');\n  return null;\n}\n\nif (!data || !data.payload || !data.payload.data || !data.payload.data.liveVitals) {\n  return null;\n}\n\nconst v = data.payload.data.liveVitals;\nconst hr = Number(v.heartRate) || 0;\n\nmsg.payload = hr;\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 560,
-    "y": 1120,
-    "wires": [
-      [
-        "chart_hr_graphql"
-      ]
-    ]
-  },
-  {
-    "id": "chart_hr_graphql",
-    "type": "ui_chart",
-    "z": "smart_health_flow",
-    "name": "HR (GraphQL Subscription)",
-    "group": "ui_group_live_graphql",
-    "order": 4,
-    "width": 0,
-    "height": 0,
-    "label": "Heart Rate (GraphQL)",
-    "chartType": "line",
-    "legend": "false",
-    "xformat": "HH:mm:ss",
-    "interpolate": "linear",
-    "nodata": "",
-    "dot": false,
-    "ymin": "40",
-    "ymax": "200",
-    "removeOlder": "120",
-    "removeOlderPoints": "",
-    "removeOlderUnit": "60",
-    "cutout": 0,
-    "useOneColor": false,
-    "useUTC": false,
-    "colors": ["#2ca02c", "#aec7e8"],
-    "outputs": 1,
-    "useDifferentColor": false,
-    "className": "",
-    "x": 900,
-    "y": 1120,
-    "wires": []
-  }
 ]

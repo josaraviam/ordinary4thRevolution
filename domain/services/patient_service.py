@@ -1,5 +1,6 @@
 # domain/services/patient_service.py
-# Patient business logic layer
+# Patient business logic - this is where the magic happens
+# Sits between the API routes and the database (clean architecture style)
 
 from typing import List, Optional
 
@@ -10,27 +11,31 @@ from infrastructure.database.repositories.patient_repository import patient_repo
 
 class PatientService:
     """
-    Patient service layer
-    Handles patient-related business logic
+    Patient service layer - handles all patient-related business logic
+    the "brain" between the API and the database.
     """
 
     async def get_all_patients(
         self,
-        page: int = 1,
-        page_size: int = 20
+        page: int = 1,        # Which page (starts at 1, not 0 - user friendly)
+        page_size: int = 20   # How many per page (20 seems reasonable)
     ) -> PatientListResponse:
-        """Get paginated list of patients with latest metrics"""
-        skip = (page - 1) * page_size
+        """ 
+        Returns a paginated response so the frontend doesn't crash
+        when we have thousands of patients ( we won't get there with this demo but still useful)
+        """
+        skip = (page - 1) * page_size  # Convert page number to skip count
         patients = await patient_repo.find_all(skip=skip, limit=page_size)
-        total = await patient_repo.count_all()
+        total = await patient_repo.count_all()  # For pagination info
 
-        items = []
+        items = []  # Build our response list
         for p in patients:
+            # Convert MongoDB doc to our nice response model
             items.append(PatientResponse(
-                id=str(p["_id"]),
+                id=str(p["_id"]),  # MongoDB ObjectId to string
                 patient_id=p["patient_id"],
-                patient_name=p.get("patient_name", "Unknown"),
-                status=p.get("status", "OK"),
+                patient_name=p.get("patient_name", "Unknown"),  # Fallback if missing
+                status=p.get("status", "OK"),                   # Default to OK
                 last_heart_rate=p.get("last_heart_rate"),
                 last_oxygen_level=p.get("last_oxygen_level"),
                 last_body_temperature=p.get("last_body_temperature"),

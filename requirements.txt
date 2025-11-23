@@ -1,41 +1,48 @@
-# Smart Health Monitoring System
-# SIS4415 Final Project
+# System Dependencies
+# SIS4415 Final Project - Joel Saravia
+# All the Python packages that make this thing work
 
-# Core Framework
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-python-multipart==0.0.6
+# === Core Web Framework ===
+# FastAPI (I love it) 
+fastapi==0.104.1              # The main web framework (love this thing)
+uvicorn[standard]==0.24.0     # ASGI server (handles HTTP)
+python-multipart==0.0.6      
 
-# GraphQL with Strawberry
-strawberry-graphql[fastapi]==0.216.1
+# === GraphQL Magic ===
+# Strawberry makes GraphQL actually enjoyable to work with (I hated doing it manually)
+strawberry-graphql[fastapi]==0.216.1  # GraphQL library (much better than graphene)
 
-# Async MongoDB Driver
-motor==3.3.2
-pymongo==4.6.0
+# === Database Drivers ===
+# MongoDB is our database of choice (document-based goodness and easy to use)
+motor==3.3.2                  # Async MongoDB driver (works great with FastAPI)
+pymongo==4.6.0                # Sync MongoDB driver (backup for complex queries)
 
-# Security and Authentication
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-bcrypt==4.0.1
-cryptography==41.0.7
+# === Security & Authentication ===
+python-jose[cryptography]==3.3.0  # JWT token handling
+passlib[bcrypt]==1.7.4            # Password hashing utilities
+bcrypt==4.0.1                     # The actual bcrypt implementation
+cryptography==41.0.7              # Cryptographic primitives
 
-# Environment Configuration
-python-dotenv==1.0.0
-pydantic==2.5.0
-pydantic-settings==2.1.0
+# === Configuration Management ===
+# Keeping secrets in environment variables 
+python-dotenv==1.0.0          # Load .env files
+pydantic==2.5.0               # Data validation and settings management
+pydantic-settings==2.1.0      # Settings via environment variables
 
-# HTTP Client (for testing)
-httpx==0.25.2
+# === HTTP Client ===
+# For making API calls and testing
+httpx==0.25.2                 
 
-# Date and Time Utilities
-python-dateutil==2.8.2
+# === Utilities ===
+# Helpful stuff for dates and logging
+python-dateutil==2.8.2        # Better date parsing than standard library
+python-json-logger==2.0.7     # Structured logging (JSON format)
 
-# Logging and Monitoring
-python-json-logger==2.0.7
+# === Production Deployment ===
+# I need to run this in the cloud bc I'm fancy
+gunicorn==21.2.0               
+aiofiles==23.2.1               
 
-# For Azure Deployment
-gunicorn==21.2.0
-aiofiles==23.2.1
-
-# WebSocket Support for GraphQL Subscriptions
-websockets==12.0
+# === Real-time Features ===
+# WebSocket support for GraphQL subscriptions (real-time vitals!)
+websockets==12.0               # WebSocket implementation

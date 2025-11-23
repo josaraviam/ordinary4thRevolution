@@ -1,5 +1,6 @@
 # infrastructure/database/repositories/patient_repository.py
-# Patient CRUD ops
+# Patient database operations - the data access layer
+# This is where we actually talk to MongoDB (the dirty work)
 
 from typing import Optional, List
 from bson import ObjectId
@@ -10,23 +11,28 @@ from config.constants import Collections
 
 
 class PatientRepository:
-    """Patient collection ops"""
+    """Patient collection operations - CRUD for patients
+    The "database translator" for patient operations.
+    """
 
     def __init__(self):
-        self.collection_name = Collections.PATIENTS
+        self.collection_name = Collections.PATIENTS  # Which MongoDB collection to use
 
     @property
     def collection(self):
+        """Get the MongoDB collection - lazy loading"""
         return get_db()[self.collection_name]
 
     async def find_all(self, skip: int = 0, limit: int = 20) -> List[dict]:
-        """Get all patients // paginated"""
+        """Skip and limit for pagination - because we shouldn't load
+        10,000 patients at once (learned that lesson the hard way)
+        """
         cursor = self.collection.find().skip(skip).limit(limit)
         return await cursor.to_list(length=limit)
 
     async def count_all(self) -> int:
-        """Total patient count"""
-        return await self.collection.count_documents({})
+        """Total patient count - needed for pagination math"""
+        return await self.collection.count_documents({})  # Empty filter = count all
 
     async def find_by_patient_id(self, patient_id: str) -> Optional[dict]:
         """Find by external patient_id (P-101)"""
