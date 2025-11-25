@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int  # JWT_EXPIRE_MINUTES
 
     # CORS
-    cors_origins: str        # CORS_ORIGINS (comma-separated)
+    cors_origins:  str = "*"          # CORS_ORIGINS (I broke the app with this, so wildcard for now)
 
     class Config:
         env_file = ".env"            # Load vars from .env
