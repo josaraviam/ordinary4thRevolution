@@ -1,7 +1,7 @@
 # 🏥 Smart Health Monitoring System
 
 **Option B – Health Monitoring System**
-**Student:** Joel Saravia – Universidad Anáhuac Mayab
+**Student:** Joel Antonio Saravia Monreal - Anahuac Mayab University - School of Engineering
 
 ---
 
@@ -14,93 +14,219 @@
 
 ---
 
-# 📹 Demo Overview
+# 🚀 Pre-requisites and Setup
 
-The video demonstrates the full end-to-end system:
+## System Requirements
 
-* Node-RED → REST API → MongoDB Atlas → GraphQL → Dashboard
-* Login + JWT authentication
-* Real-time vital signs via GraphQL Subscriptions
-* Alerts and threshold handling
-* CSV export
-* Cloud deployment (Azure + Railway + Atlas)
-* Dashboard UX walkthrough
+- **Python:** 3.12+
+- **Node.js:** 16+ (for Node-RED)
+- **MongoDB Atlas Account** (free tier works)
 
 ---
 
-# ⚙️ Setup Instructions (Local Development)
+## 📋 Initial Setup (Once)
 
-Although the entire system is deployed in the cloud, the following steps reproduce the environment locally for grading and testing.
+### 1️⃣ Extract the Project
 
-## 1️⃣ Install Dependencies
+Extract the ZIP file to your desired location:
+```bash
+# Example location
+C:\Projects\ordinary4threvolution\
+# or
+~/Projects/ordinary4threvolution/
+```
 
-### Backend (FastAPI)
+Navigate to the folder:
+```bash
+cd ordinary4threvolution
+```
 
+### 2️⃣ Create Python Virtual Environment
+```bash
+python -m venv venv
+
+# Activate virtual environment:
+# Linux/Mac:
+source venv/bin/activate
+
+# Windows PowerShell:
+.\venv\Scripts\Activate.ps1
+
+# Windows CMD:
+.\venv\Scripts\activate.bat
+```
+
+### 3️⃣ Install Dependencies (Python)
 ```bash
 pip install -r requirements.txt
 ```
 
-### Node-RED
+### 4️⃣ MongoDB Atlas Configuration
 
+1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a new cluster (M0 Free tier works fine)
+3. Create a database user with read/write permissions
+4. Whitelist your IP address (or use `0.0.0.0/0` for testing)
+5. Get your connection string from Atlas (click **Connect → Drivers → MongoDB for VS Code**)
+
+### 5️⃣ Environment Variables Setup
+
+Create a `.env` file in the project root directory:
+```bash
+# .env
+MONGODB_URL=mongodb+srv://<db_username>:<db_password>@clustername-cluster.r8pes.mongodb.net/?retryWrites=true&w=majority
+DATABASE_NAME=health_monitoring
+JWT_SECRET_KEY=secret-key
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30 
+```
+
+**⚠️ Important:** Replace `<username>`, `<password>`, and `<cluster>` with your actual MongoDB Atlas credentials.
+
+**Example:**
+```bash
+MONGODB_URL=mongodb+srv://username:password@savimindai-cluster.r8pes.mongodb.net/?retryWrites=true&w=majority
+DATABASE_NAME=health_monitoring
+JWT_SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+### 6️⃣ Database Initialization
+
+The system will automatically create the required collections on first run:
+- `patients`
+- `vitals`
+- `alerts`
+- `users`
+
+### 7️⃣ Install Node-RED (If needed)
 ```bash
 npm install -g node-red
 ```
 
 ---
 
-# ▶️ Running the System Locally
+## ▶️ Running the System Locally
 
-## 2️⃣ Run FastAPI
-
+### Start the Backend (FastAPI)
 ```bash
+# Make sure the virtual environment is activated
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Local API:
-[http://localhost:8000](http://localhost:8000)
+**Available endpoints:**
+- 🏠 API Root: [http://localhost:8000](http://localhost:8000)
+- 📚 Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
+- 🔍 GraphQL Playground: [http://localhost:8000/graphql](http://localhost:8000/graphql)
 
-Swagger UI:
-[http://localhost:8000/docs](http://localhost:8000/docs)
+### Start Node-RED Dashboard
 
-GraphQL Playground:
-[http://localhost:8000/graphql](http://localhost:8000/graphql)
-
----
-
-## 3️⃣ Run Node-RED
-
+In a **new terminal window**:
 ```bash
 node-red
 ```
 
-Dashboard (local):
-[http://localhost:1880/ui](http://localhost:1880/ui)
+**Configure Node-RED:**
 
-Import flow JSON from:
-`flows/health_monitoring.json`
-
-Update URLs to local endpoints:
-
-* REST → `http://localhost:8000`
-* WebSocket → `ws://localhost:8000/graphql`
+1. Open Node-RED editor: [http://localhost:1880](http://localhost:1880)
+2. Import the flow: **Menu (☰) → Import → Select file** → `flows/health_monitoring.json`
+3. **Update endpoint URLs** in HTTP Request and WebSocket nodes:
+   - REST API: `http://localhost:8000`
+   - GraphQL WebSocket: `ws://localhost:8000/graphql`
+4. Click **Deploy** (top right)
+5. Access dashboard: [http://localhost:1880/ui](http://localhost:1880/ui)
 
 ---
 
-# 🔑 Default Credentials
+# 🔑 Authentication Credentials
 
-These credentials are valid for both the cloud deployment and local testing:
+### For Local Development:
+Use the credentials you created in step 6 (Database Initialization).
 
+### For Cloud Demo (Using Deployed System):
 ```
 username: franciscososa
 password: franciscososa
 ```
 
-Used for:
+**⚠️ Note:** The `franciscososa` user **only exists in the cloud deployment** at:
+- API: [https://industrialapi.savimind.com](https://industrialapi.savimind.com)
+- Dashboard: [https://nodered.savimind.com/ui](https://nodered.savimind.com/ui)
 
-* Login on dashboard
-* JWT authentication
-* Accessing protected REST endpoints
-* GraphQL queries/subscriptions
+If you're running locally, you **must create your own user** using the `create_user.py` script.
+
+---
+
+## 🧪 Verify Installation
+
+### 1. Check Backend Health:
+```bash
+curl http://localhost:8000/api/health
+```
+
+Expected response:
+```json
+{
+  "status": "healthy",
+  "database": "connected"
+}
+```
+
+### 2. Test Authentication:
+```bash
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{\"username\":\"yourusername\",\"password\":\"yourpassword\"}"
+```
+
+You should receive a JWT token in the response.
+
+### 3. Test GraphQL:
+Visit [http://localhost:8000/graphql](http://localhost:8000/graphql) and run:
+```graphql
+query {
+  patients {
+    id
+    name
+    age
+  }
+}
+```
+
+---
+
+## 🆘 Troubleshooting
+
+### "Connection refused" or "Database connection failed":
+- Verify MongoDB connection string in `.env`
+- Check if MongoDB Atlas IP whitelist includes your IP
+- Ensure database user has read/write permissions
+
+### "Module not found" errors:
+- Ensure virtual environment is activated
+- Run `pip install -r requirements.txt` again
+- Try `pip install --upgrade pip` first
+
+### Node-RED dashboard not showing:
+- Install dashboard nodes: `npm install -g node-red-dashboard`
+- Restart Node-RED after installing new nodes
+- Check browser console (F12) for WebSocket errors
+
+### Authentication failures:
+- Verify user was created in MongoDB (check Atlas web interface)
+- Check `JWT_SECRET_KEY` matches in `.env`
+- Ensure you ran `create_user.py` successfully
+
+### Port already in use (8000 or 1880):
+```bash
+# Windows - kill process on port 8000:
+netstat -ano | findstr :8000
+taskkill /PID <PID> /F
+
+# Linux/Mac:
+lsof -ti:8000 | xargs kill -9
+```
 
 ---
 
@@ -145,14 +271,14 @@ Used for:
 
 # 🧪 Testing (Manual)
 
-### Health Endpoint
+### Cloud Endpoints
 
+### Health Check
 ```bash
 curl https://industrialapi.savimind.com/api/health
 ```
 
 ### Login
-
 ```bash
 curl -X POST https://industrialapi.savimind.com/api/auth/login \
   -H "Content-Type: application/json" \
@@ -160,14 +286,12 @@ curl -X POST https://industrialapi.savimind.com/api/auth/login \
 ```
 
 ### Authorized Example (patients list)
-
 ```bash
 curl https://industrialapi.savimind.com/api/patients \
   -H "Authorization: Bearer <token>"
 ```
 
 ### GraphQL Query
-
 ```graphql
 query {
   patients {
@@ -179,7 +303,6 @@ query {
 ```
 
 ### GraphQL Subscription
-
 ```graphql
 subscription {
   liveVitals {
@@ -193,7 +316,6 @@ subscription {
 ---
 
 # 📁 Project Structure
-
 ```
 ORDINARY4THREVOLUTION/
 ├── api/                  # REST + GraphQL routers
@@ -201,12 +323,17 @@ ORDINARY4THREVOLUTION/
 ├── domain/               # Core logic, models, and services
 ├── infrastructure/       # Database connections (MongoDB)
 ├── flows/                # Node-RED flows (JSON)
+│   └── health_monitoring.json
 ├── screenshots/          # Demo screenshots for documentation
-├── main.py               # FastAPI entry point
-├── architecture.md       # Cloud mapping + schema (separate document)
-├── README.md             # Setup + instructions (this file)
-└── requirements.txt
+├── create_user.py       # User creation script
+├── main.py              # FastAPI entry point
+├── architecture.md      # Cloud mapping + schema (separate document)
+├── README.md            # Setup + instructions (this file)
+├── requirements.txt     # Python dependencies
+└── .env.example         # Example environment variables
 ```
+
+---
 
 # 📧 Contact
 

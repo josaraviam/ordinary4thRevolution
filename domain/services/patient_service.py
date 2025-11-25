@@ -30,7 +30,7 @@ class PatientService:
 
         items = []  # Build our response list
         for p in patients:
-            # Convert MongoDB doc to our nice response model
+            # Convert MongoDB doc to our response model
             items.append(PatientResponse(
                 id=str(p["_id"]),  # MongoDB ObjectId to string
                 patient_id=p["patient_id"],
