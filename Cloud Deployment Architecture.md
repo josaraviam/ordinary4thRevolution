@@ -15,6 +15,7 @@ Mapping of cloud services used to deploy the Smart Health Monitoring System acro
 
 **Service:** Azure App Service (Linux, Python 3.12)
 **Deployed URL:** [https://industrialapi.savimind.com](https://industrialapi.savimind.com)
+**Demo URL:** [YouTube](https://youtu.be/rAdTeCjZlCo)
 
 ### Configuration
 
