@@ -281,9 +281,9 @@ Configurable thresholds for triggering alerts (stored in application config or d
 
 ## ✅ Cloud Mapping Summary
 
-✔️ **API Hosting:** Azure App Service (Python FastAPI + GraphQL)
-✔️ **Database Service:** MongoDB Atlas M0 (Free Tier, AWS-backed)
-✔️ **File Storage:** Not required (all data in MongoDB documents)
+✔️ **API Hosting:** Azure App Service (Python FastAPI + GraphQL)<br>
+✔️ **Database Service:** MongoDB Atlas M0 (Free Tier, AWS-backed)<br>
+✔️ **File Storage:** Not required (all data in MongoDB documents)<br>
 ✔️ **Node-RED:** Railway.app (Docker, GCP infrastructure)
 
 ---
