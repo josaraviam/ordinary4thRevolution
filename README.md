@@ -10,7 +10,7 @@
 * 📊 **Dashboard (Node-RED):** [https://nodered.savimind.com/ui](https://nodered.savimind.com/ui)
 * 🔌 **REST + GraphQL API:** [https://industrialapi.savimind.com](https://industrialapi.savimind.com)
 * 🧪 **Health Check:** [https://industrialapi.savimind.com/api/health](https://industrialapi.savimind.com/api/health)
-* 🎥 **YouTube Demo Video:** [Watch Full Demo](ytlink)
+* 🎥 **YouTube Demo Video:** [Watch Full Demo](https://youtu.be/rAdTeCjZlCo)
 
 ---
 
@@ -32,8 +32,6 @@ Extract the ZIP file to your desired location:
 ```bash
 # Example location
 C:\Projects\ordinary4threvolution\
-# or
-~/Projects/ordinary4threvolution/
 ```
 
 Navigate to the folder:
@@ -63,7 +61,7 @@ pip install -r requirements.txt
 
 ### 4️⃣ MongoDB Atlas Configuration
 
-1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or use a local DB.
 2. Create a new cluster (M0 Free tier works fine)
 3. Create a database user with read/write permissions
 4. Whitelist your IP address (or use `0.0.0.0/0` for testing)
@@ -89,7 +87,7 @@ MONGODB_URL=mongodb+srv://username:password@savimindai-cluster.r8pes.mongodb.net
 DATABASE_NAME=health_monitoring
 JWT_SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
 JWT_ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+ACCESS_TOKEN_EXPIRE_MINUTES=30 # Or wathever you feel like
 ```
 
 ### 6️⃣ Database Initialization
@@ -196,7 +194,7 @@ query {
 
 ---
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 ### "Connection refused" or "Database connection failed":
 - Verify MongoDB connection string in `.env`
@@ -204,7 +202,7 @@ query {
 - Ensure database user has read/write permissions
 
 ### "Module not found" errors:
-- Ensure virtual environment is activated
+- Ensure virtual environment is activated (and that you are using it to avoid conflicts)
 - Run `pip install -r requirements.txt` again
 - Try `pip install --upgrade pip` first
 
@@ -230,9 +228,9 @@ lsof -ti:8000 | xargs kill -9
 
 ---
 
-# 🧰 Technologies Used
+# Technologies Used
 
-### 🖥 Backend
+### Backend
 
 | Technology             | Purpose                                                        |
 | ---------------------- | -------------------------------------------------------------- |
@@ -247,7 +245,7 @@ lsof -ti:8000 | xargs kill -9
 | **uvicorn**            | ASGI server for running FastAPI in production                 |
 | **gunicorn**           | Process manager for production deployment                      |
 
-### 📊 Dashboard
+### Dashboard
 
 | Technology              | Purpose                                 |
 | ----------------------- | --------------------------------------- |
@@ -257,7 +255,7 @@ lsof -ti:8000 | xargs kill -9
 | **WebSocket/GraphQL**   | Real-time streaming of vital signs      |
 | **HTTP Request nodes**  | REST API integration and data fetching  |
 
-### ☁️ Cloud & Deployment
+### Cloud & Deployment
 
 | Platform              | Role                                              |
 | --------------------- | ------------------------------------------------- |
@@ -269,8 +267,7 @@ lsof -ti:8000 | xargs kill -9
 
 ---
 
-# 🧪 Testing (Manual)
-
+# Testing (Manual)
 ### Cloud Endpoints
 
 ### Health Check
@@ -319,9 +316,9 @@ subscription {
 ```
 ORDINARY4THREVOLUTION/
 ├── api/                  # REST + GraphQL routers
-├── config/               # Settings, constants, env config
+├── config/               # Settings, constants, config
 ├── domain/               # Core logic, models, and services
-├── infrastructure/       # Database connections (MongoDB)
+├── infrastructure/       # Database (MongoDB)
 ├── flows/                # Node-RED flows (JSON)
 │   └── health_monitoring.json
 ├── screenshots/          # Demo screenshots for documentation
