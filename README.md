@@ -72,14 +72,14 @@ pip install -r requirements.txt
 Create a `.env` file in the project root directory:
 ```bash
 # .env
-MONGODB_URL=mongodb+srv://<db_username>:<db_password>@clustername-cluster.r8pes.mongodb.net/?retryWrites=true&w=majority
-DATABASE_NAME=health_monitoring
-JWT_SECRET_KEY=secret-key
+MONGODB_URL=mongodb+srv://<db_username>:<db_password>@<clustername>-cluster.r8pes.mongodb.net/?retryWrites=true&w=majority
+DATABASE_NAME=collection_name
+JWT_SECRET_KEY=secret-key-usually-a-long-random-string
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30 
 ```
 
-**⚠️ Important:** Replace `<username>`, `<password>`, and `<cluster>` with your actual MongoDB Atlas credentials.
+**⚠️ Important:** Replace `<username>`, `<password>`, and `<clustername>` with your real MongoDB Atlas credentials.
 
 **Example:**
 ```bash
@@ -92,7 +92,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30 # Or wathever you feel like
 
 ### 6️⃣ Database Initialization
 
-The system will automatically create the required collections on first run:
+The system will automatically create the collections on first run:
 - `patients`
 - `vitals`
 - `alerts`
