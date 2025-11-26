@@ -2,11 +2,11 @@
 
 **Option B – Health Monitoring System**
 
-```
+
 **Student:** [Joel Antonio Saravia Monreal](mailto:joel.saravia@anahuac.mx) 
 Anahuac Mayab University
 School of Engineering
-```
+
 ---
 
 # 🔗 Useful Links
