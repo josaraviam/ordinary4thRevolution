@@ -1,7 +1,7 @@
 # 🏥 Smart Health Monitoring System
 
 **Option B – Health Monitoring System**
-**Student:** Joel Antonio Saravia Monreal - Anahuac Mayab University - School of Engineering
+**Student:** [Joel Antonio Saravia Monreal](mailto:joel.saravia@anahuac.mx) - Anahuac Mayab University - School of Engineering
 
 ---
 
@@ -330,13 +330,5 @@ ORDINARY4THREVOLUTION/
 ├── requirements.txt     # Python dependencies
 └── .env.example         # Example environment variables
 ```
-
----
-
-# 📧 Contact
-
-**Joel Saravia**
-Email: [joel.saravia@anahuac.mx](mailto:joel.saravia@anahuac.mx)
-GitHub: [https://github.com/josaraviam](https://github.com/josaraviam)
 
 ---
