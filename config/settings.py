@@ -1,5 +1,4 @@
-# config/settings.py
-# Global application configuration (loaded from .env or Azure App Settings)
+
 # Back to basics XD – defaults added again to avoid Pydantic blowing up on startup.
 
 from pydantic_settings import BaseSettings

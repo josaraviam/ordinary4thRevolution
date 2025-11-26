@@ -1,6 +1,3 @@
-# domain/services/__init__.py
-# Export all services
-
 from domain.services.auth_service import auth_service, AuthService
 from domain.services.patient_service import patient_service, PatientService
 from domain.services.vital_service import (

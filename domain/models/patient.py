@@ -1,7 +1,3 @@
-# domain/models/patient.py
-# Patient data models - basically our patient schema definitions
-# Using pydantic because it makes validation super easy
-
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime

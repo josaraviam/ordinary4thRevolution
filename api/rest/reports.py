@@ -1,6 +1,3 @@
-# api/rest/reports.py
-# Reports + CSV export endpoints
-
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import PlainTextResponse
 from typing import Optional

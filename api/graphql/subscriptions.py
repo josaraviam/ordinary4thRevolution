@@ -1,6 +1,3 @@
-# api/graphql/subscriptions.py
-# GraphQL subscriptions for real-time data
-
 import strawberry
 from typing import AsyncGenerator
 

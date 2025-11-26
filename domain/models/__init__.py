@@ -1,6 +1,3 @@
-# domain/models/__init__.py
-# Model exports
-
 from domain.models.user import (
     UserBase,
     UserCreate,

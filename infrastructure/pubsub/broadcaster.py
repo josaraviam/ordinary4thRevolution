@@ -1,6 +1,3 @@
-# infrastructure/pubsub/broadcaster.py
-# In-memory pub/sub for GraphQL subscriptions
-
 import asyncio
 from typing import AsyncGenerator, Dict, Set, Any
 from dataclasses import dataclass

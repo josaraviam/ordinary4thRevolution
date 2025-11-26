@@ -1,6 +1,3 @@
-# api/rest/settings.py
-# Threshold settings endpoints
-
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from api.middleware.jwt_auth import get_current_user

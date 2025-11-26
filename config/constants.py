@@ -1,6 +1,3 @@
-# config/constants.py
-# Static values and threshold defaults
-
 # Alert thresholds (defaults)
 DEFAULT_THRESHOLDS = {
     "heart_rate_high": 120,

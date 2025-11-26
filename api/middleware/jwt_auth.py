@@ -1,7 +1,3 @@
-# JWT Authentication Middleware
-# Our security checkpoint for the Smart Health Monitoring System
-# Because health data is sensitive and we don't want random people accessing it
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional

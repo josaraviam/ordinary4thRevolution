@@ -1,6 +1,3 @@
-# domain/services/vital_service.py
-# Vital signs + alerts business logic
-
 from datetime import datetime
 from typing import List, Optional
 

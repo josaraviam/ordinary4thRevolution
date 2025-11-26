@@ -1,6 +1,3 @@
-# api/rest/overview.py
-# Overview/KPI endpoints
-
 from fastapi import APIRouter, Depends, Query
 
 from api.middleware.jwt_auth import get_current_user

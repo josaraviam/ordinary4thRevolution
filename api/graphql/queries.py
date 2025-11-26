@@ -1,6 +1,3 @@
-# api/graphql/queries.py
-# GraphQL queries
-
 import strawberry
 from typing import List, Optional
 

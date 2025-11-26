@@ -1,8 +1,4 @@
-# infrastructure/security/password_hasher.py
-# Bcrypt password hashing
-
 from passlib.context import CryptContext
-
 
 # bcrypt context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

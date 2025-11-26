@@ -1,6 +1,3 @@
-# infrastructure/database/repositories/vital_repository.py
-# Vital readings + alerts CRUD
-
 from typing import Optional, List
 from bson import ObjectId
 from datetime import datetime, timedelta

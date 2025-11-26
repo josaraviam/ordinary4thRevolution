@@ -1,6 +1,3 @@
-# domain/models/user.py
-# User model + schemas for auth
-
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime

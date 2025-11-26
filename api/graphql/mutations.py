@@ -1,6 +1,3 @@
-# api/graphql/mutations.py
-# GraphQL mutations
-
 import strawberry
 from datetime import datetime
 

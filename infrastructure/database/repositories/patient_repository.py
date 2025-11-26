@@ -8,6 +8,9 @@ from datetime import datetime
 
 from infrastructure.database.connection import get_db
 from config.constants import Collections
+from config.logging_config import get_logger
+
+logger = get_logger("repositories.patient")
 
 
 class PatientRepository:
@@ -27,8 +30,32 @@ class PatientRepository:
         """Skip and limit for pagination - because we shouldn't load
         10,000 patients at once (learned that lesson the hard way)
         """
-        cursor = self.collection.find().skip(skip).limit(limit)
-        return await cursor.to_list(length=limit)
+        logger.debug(f"Finding patients with skip={skip}, limit={limit}", extra={
+            "skip": skip,
+            "limit": limit,
+            "operation": "find_all_patients"
+        })
+        
+        try:
+            cursor = self.collection.find({}).skip(skip).limit(limit)
+            patients = await cursor.to_list(length=limit)
+            
+            logger.debug(f"Found {len(patients)} patients", extra={
+                "patients_found": len(patients),
+                "skip": skip,
+                "limit": limit,
+                "operation": "find_all_patients"
+            })
+            
+            return patients
+        except Exception as e:
+            logger.error(f"Error finding patients: {e}", extra={
+                "skip": skip,
+                "limit": limit,
+                "error": str(e),
+                "operation": "find_all_patients"
+            }, exc_info=True)
+            raise
 
     async def count_all(self) -> int:
         """Total patient count - needed for pagination math"""

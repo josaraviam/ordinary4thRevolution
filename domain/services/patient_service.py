@@ -1,12 +1,11 @@
-# domain/services/patient_service.py
-# Patient business logic - this is where the magic happens
-# Sits between the API routes and the database (clean architecture style)
-
 from typing import List, Optional
 
 from domain.models.patient import PatientResponse, PatientListResponse
 from domain.exceptions.custom_exceptions import PatientNotFoundError
 from infrastructure.database.repositories.patient_repository import patient_repo
+from config.logging_config import get_logger
+
+logger = get_logger("services.patient")
 
 
 class PatientService:
@@ -24,9 +23,22 @@ class PatientService:
         Returns a paginated response so the frontend doesn't crash
         when we have thousands of patients ( we won't get there with this demo but still useful)
         """
+        logger.debug(f"Getting patients page {page} with page_size {page_size}", extra={
+            "page": page,
+            "page_size": page_size,
+            "operation": "get_all_patients"
+        })
+        
         skip = (page - 1) * page_size  # Convert page number to skip count
         patients = await patient_repo.find_all(skip=skip, limit=page_size)
         total = await patient_repo.count_all()  # For pagination info
+        
+        logger.info(f"Retrieved {len(patients)} patients from database", extra={
+            "patients_count": len(patients),
+            "total_patients": total,
+            "page": page,
+            "operation": "get_all_patients"
+        })
 
         items = []  # Build our response list
         for p in patients:

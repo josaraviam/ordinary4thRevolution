@@ -1,6 +1,3 @@
-# api/rest/__init__.py
-# REST API routers
-
 from api.rest.health import router as health_router
 from api.rest.auth import router as auth_router
 from api.rest.patients import router as patients_router

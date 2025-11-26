@@ -2,9 +2,9 @@
     {
         "id": "14ce13e3b5baf506",
         "type": "tab",
-        "label": "Smart Health Dashboard - Final Project - Saravia Monreal Joel Antonio",
+        "label": "Smart Health Dashboard - Final Project",
         "disabled": false,
-        "info": "Smart Health Monitoring System - Simulation + Dashboard wired to industrialapi.savimind.com, completely deployed to cloud services."
+        "info": "Smart Health Monitoring System - Simulation + Dashboard wired to industrialapi.savimind.com"
     },
     {
         "id": "2e1381bc8dec6e9f",
@@ -2942,7 +2942,7 @@
         "hidden": false
     },
     {
-        "id": "7e079b92eaa95e4d",
+        "id": "2797164fa437d417",
         "type": "global-config",
         "env": [],
         "modules": {

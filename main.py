@@ -6,11 +6,13 @@ from contextlib import asynccontextmanager
 # REST + GraphQL + WebSockets
 # Built with FastAPI because... well, it's fast (easier) and I like it :)
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from config.settings import get_settings
+from config.logging_config import setup_logging, get_logger
 from infrastructure.database.connection import connect_db, close_db
+from api.middleware.logging_middleware import log_requests_middleware
 
 # Import REST routers
 from api.rest.health import router as health_router
@@ -25,18 +27,35 @@ from api.rest.settings import router as settings_router
 from api.graphql.schema import graphql_router
 
 
-# Lifespan context // handles startup/shutdown
+# Handles startup/shutdown
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    print("[APP] Starting Smart Health Monitoring API...")
-    await connect_db()
-    print("[APP] GraphQL endpoint available at /graphql")
-    print("[APP] GraphQL subscriptions via WebSocket at /graphql")
+    # Initialize logging first
+    app_logger = setup_logging()
+    app_logger.info("Starting Smart Health Monitoring API...", extra={"event": "app_startup"})
+    
+    try:
+        await connect_db()
+        app_logger.info("Database connected successfully", extra={"event": "db_connected"})
+        app_logger.info("GraphQL endpoint available at /graphql", extra={"event": "graphql_ready"})
+        app_logger.info("GraphQL subscriptions via WebSocket at /graphql", extra={"event": "websocket_ready"})
+        app_logger.info("Application startup complete", extra={"event": "app_ready"})
+    except Exception as e:
+        app_logger.error(f"Failed to start application: {e}", extra={"event": "app_startup_failed"}, exc_info=True)
+        raise
+    
     yield
+    
     # Shutdown
-    await close_db()
-    print("[APP] Shutdown complete")
+    app_logger.info("Starting application shutdown...", extra={"event": "app_shutdown_start"})
+    try:
+        await close_db()
+        app_logger.info("Database disconnected successfully", extra={"event": "db_disconnected"})
+    except Exception as e:
+        app_logger.error(f"Error during shutdown: {e}", extra={"event": "app_shutdown_error"}, exc_info=True)
+    
+    app_logger.info("Application shutdown complete", extra={"event": "app_shutdown_complete"})
 
 
 # Create app
@@ -61,6 +80,11 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
+
+# Add request logging middleware
+@app.middleware("http")
+async def logging_middleware(request: Request, call_next):
+    return await log_requests_middleware(request, call_next)
 
 
 # Routes

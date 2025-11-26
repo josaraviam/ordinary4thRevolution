@@ -1,6 +1,3 @@
-# api/graphql/types.py
-# Strawberry GraphQL types
-
 import strawberry
 from typing import Optional, List
 from datetime import datetime

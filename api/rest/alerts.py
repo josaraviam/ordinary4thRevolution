@@ -1,6 +1,3 @@
-# api/rest/alerts.py
-# Alert management endpoints
-
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import Optional
 

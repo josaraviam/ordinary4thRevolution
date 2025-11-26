@@ -1,6 +1,3 @@
-# domain/models/vital.py
-# Vital signs data + alerts
-
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime

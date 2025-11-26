@@ -1,6 +1,3 @@
-# domain/services/auth_service.py
-# Auth business logic layer
-
 from datetime import datetime
 from typing import Optional
 
@@ -13,6 +10,9 @@ from domain.exceptions.custom_exceptions import (
 from infrastructure.database.repositories.user_repository import user_repo
 from infrastructure.security.password_hasher import hash_password, verify_password
 from infrastructure.security.jwt_handler import create_access_token, get_token_expiry_seconds
+from config.logging_config import get_logger
+
+logger = get_logger("services.auth")
 
 
 class AuthService:

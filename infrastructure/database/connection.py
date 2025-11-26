@@ -1,11 +1,11 @@
-# infrastructure/database/connection.py
-# MongoDB connection handling - keeping it simple with Motor (async driver)
-# database "gateway" - everything goes through here
-
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from typing import Optional
+import logging
 
 from config.settings import get_settings
+
+# simple logger 
+logger = logging.getLogger("health_monitoring.database")
 
 
 class MongoDB:
@@ -26,20 +26,40 @@ async def connect_db():
     """Initialize MongoDB connection 
     """
     settings = get_settings()
-    db_instance.client = AsyncIOMotorClient(settings.mongo_uri)
-    db_instance.db = db_instance.client[settings.mongo_db]
+    logger.info("Attempting to connect to MongoDB", extra={
+        "database": settings.mongo_db,
+        "event": "db_connect_start"
+    })
+    
+    try:
+        db_instance.client = AsyncIOMotorClient(settings.mongo_uri)
+        db_instance.db = db_instance.client[settings.mongo_db]
 
-    # Quick health check - if this fails, we know something's wrong
-    await db_instance.client.admin.command("ping")
-    print(f"[DB] Connected to MongoDB: {settings.mongo_db} (we're good to go!)")
+        # Quick health check - if this fails, we know something's wrong
+        await db_instance.client.admin.command("ping")
+        
+        logger.info("Successfully connected to MongoDB", extra={
+            "database": settings.mongo_db,
+            "event": "db_connect_success"
+        })
+    except Exception as e:
+        logger.error("Failed to connect to MongoDB", extra={
+            "database": settings.mongo_db,
+            "error": str(e),
+            "event": "db_connect_failed"
+        }, exc_info=True)
+        raise
 
 
 async def close_db():
     """Close MongoDB connection
     """
     if db_instance.client:
+        logger.info("Closing MongoDB connection", extra={"event": "db_disconnect_start"})
         db_instance.client.close()
-        print("[DB] MongoDB connection closed (bye bye!)")
+        logger.info("MongoDB connection closed successfully", extra={"event": "db_disconnect_success"})
+    else:
+        logger.warning("No MongoDB connection to close", extra={"event": "db_disconnect_no_connection"})
 
 
 def get_db() -> AsyncIOMotorDatabase:

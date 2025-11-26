@@ -1,6 +1,3 @@
-# infrastructure/pubsub/__init__.py
-# Export broadcaster
-
 from infrastructure.pubsub.broadcaster import (
     broadcaster,
     Broadcaster,

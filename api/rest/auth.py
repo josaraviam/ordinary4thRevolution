@@ -1,7 +1,3 @@
-# api/rest/auth.py
-# Authentication API routes - login/register stuff
-# Keep it simple: register, login, get JWT token, profit!
-
 from fastapi import APIRouter, HTTPException, status
 
 from domain.models.user import UserCreate, UserLogin, TokenResponse, UserResponse

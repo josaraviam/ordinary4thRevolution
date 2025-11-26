@@ -1,6 +1,3 @@
-# infrastructure/database/repositories/user_repository.py
-# User CRUD ops
-
 from typing import Optional
 from bson import ObjectId
 
