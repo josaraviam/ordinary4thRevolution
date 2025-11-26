@@ -9,17 +9,17 @@ School of Engineering<br>
 
 ---
 
-# 🔗 Useful Links
+#  Useful Links
 
-* 🎥 **YouTube Demo Video:** [Watch Demo](https://youtu.be/rAdTeCjZlCo)
-* 📊 **Dashboard (Node-RED):** [https://nodered.savimind.com/ui](https://nodered.savimind.com/ui/#!/2?socketid=JTD-NDXojd9EZ9cxAAAr)
-* 🔌 **REST + GraphQL API:** [https://industrialapi.savimind.com](https://industrialapi.savimind.com)
-* 🧪 **Health Check:** [https://industrialapi.savimind.com/api/health](https://industrialapi.savimind.com/api/health)
+*  **YouTube Demo Video:** [Watch Demo](https://youtu.be/rAdTeCjZlCo)
+*  **Dashboard (Node-RED):** [https://nodered.savimind.com/ui](https://nodered.savimind.com/ui/#!/2?socketid=JTD-NDXojd9EZ9cxAAAr)
+*  **REST + GraphQL API:** [https://industrialapi.savimind.com](https://industrialapi.savimind.com)
+*  **Health Check:** [https://industrialapi.savimind.com/api/health](https://industrialapi.savimind.com/api/health)
 
 
 ---
 
-# 🚀 Pre-requisites and Setup
+#  Pre-requisites and Setup
 
 ## System Requirements
 
@@ -29,9 +29,9 @@ School of Engineering<br>
 
 ---
 
-## 📋 Initial Setup (Once)
+##  Initial Setup (Once)
 
-### 1️⃣ Extract the Project
+### Extract the Project
 
 Extract the ZIP file to your desired location:
 ```bash
@@ -44,7 +44,7 @@ Navigate to the folder:
 cd ordinary4threvolution
 ```
 
-### 2️⃣ Create Python Virtual Environment
+### Create Python Virtual Environment
 ```bash
 python -m venv venv
 
@@ -59,12 +59,12 @@ source venv/bin/activate
 .\venv\Scripts\activate.bat
 ```
 
-### 3️⃣ Install Dependencies (Python)
+### Install Dependencies (Python)
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4️⃣ MongoDB Atlas Configuration
+### MongoDB Atlas Configuration
 
 1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or use a local DB.
 2. Create a new cluster (M0 Free tier works fine)
@@ -72,7 +72,7 @@ pip install -r requirements.txt
 4. Whitelist your IP address (or use `0.0.0.0/0` for testing)
 5. Get your connection string from Atlas (click **Connect → Drivers → MongoDB for VS Code**)
 
-### 5️⃣ Environment Variables Setup
+### Environment Variables Setup
 
 Create a `.env` file in the project root directory:
 ```bash
@@ -84,7 +84,7 @@ JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30 
 ```
 
-**⚠️ Important:** Replace `<username>`, `<password>`, and `<clustername>` with your real MongoDB Atlas credentials.
+**Important:** Replace `<username>`, `<password>`, and `<clustername>` with your real MongoDB Atlas credentials.
 
 **Example:**
 ```bash
@@ -95,7 +95,7 @@ JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30 # Or wathever you feel like
 ```
 
-### 6️⃣ Database Initialization
+### Database Initialization
 
 The system will automatically create the collections on first run:
 - `patients`
@@ -103,14 +103,14 @@ The system will automatically create the collections on first run:
 - `alerts`
 - `users`
 
-### 7️⃣ Install Node-RED (If needed)
+### Install Node-RED (If needed)
 ```bash
 npm install -g node-red
 ```
 
 ---
 
-## ▶️ Running the System Locally
+## Running the System Locally
 
 ### Start the Backend (FastAPI)
 ```bash
@@ -119,9 +119,9 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 **Available endpoints:**
-- 🏠 API Root: [http://localhost:8000](http://localhost:8000)
-- 📚 Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
-- 🔍 GraphQL Playground: [http://localhost:8000/graphql](http://localhost:8000/graphql)
+- API Root: [http://localhost:8000](http://localhost:8000)
+- Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
+- GraphQL Playground: [http://localhost:8000/graphql](http://localhost:8000/graphql)
 
 ### Start Node-RED Dashboard
 
@@ -142,7 +142,7 @@ node-red
 
 ---
 
-# 🔑 Authentication Credentials
+# Authentication Credentials
 
 ### For Local Development:
 Use the credentials you created in step 6 (Database Initialization).
@@ -153,7 +153,7 @@ username: franciscososa
 password: franciscososa
 ```
 
-**⚠️ Note:** The `franciscososa` user **only exists in the cloud deployment** at:
+**Note:** The `franciscososa` user **only exists in the cloud deployment** at:
 - API: [https://industrialapi.savimind.com](https://industrialapi.savimind.com)
 - Dashboard: [https://nodered.savimind.com/ui](https://nodered.savimind.com/ui)
 
@@ -161,7 +161,7 @@ If you're running locally, you **must create your own user** using the `create_u
 
 ---
 
-## 🧪 Verify Installation
+## Verify Installation
 
 ### 1. Check Backend Health:
 ```bash
@@ -317,7 +317,7 @@ subscription {
 
 ---
 
-# 📁 Project Structure
+# Project Structure
 ```
 ORDINARY4THREVOLUTION/
 ├── api/                  # REST + GraphQL routers

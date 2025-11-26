@@ -11,12 +11,12 @@ Mapping of cloud services used to deploy the Smart Health Monitoring System acro
 
 ---
 
-# 🔗 Useful Links
+# Useful Links
 
-* 🎥 **YouTube Demo Video:** [Watch Demo](https://youtu.be/rAdTeCjZlCo)
-* 📊 **Dashboard (Node-RED):** [https://nodered.savimind.com/ui](https://nodered.savimind.com/ui/#!/2?socketid=JTD-NDXojd9EZ9cxAAAr)
-* 🔌 **REST + GraphQL API:** [https://industrialapi.savimind.com](https://industrialapi.savimind.com)
-* 🧪 **Health Check:** [https://industrialapi.savimind.com/api/health](https://industrialapi.savimind.com/api/health)
+* **YouTube Demo Video:** [Watch Demo](https://youtu.be/rAdTeCjZlCo)
+* **Dashboard (Node-RED):** [https://nodered.savimind.com/ui](https://nodered.savimind.com/ui/#!/2?socketid=JTD-NDXojd9EZ9cxAAAr)
+*  **REST + GraphQL API:** [https://industrialapi.savimind.com](https://industrialapi.savimind.com)
+*  **Health Check:** [https://industrialapi.savimind.com/api/health](https://industrialapi.savimind.com/api/health)
 
 
 ---
@@ -144,7 +144,7 @@ If file storage were needed in the future, the system could easily integrate:
 
 ---
 
-## 📊 Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────┐
@@ -175,7 +175,7 @@ If file storage were needed in the future, the system could easily integrate:
 └─────────────────────────────────────────┘
 ```
 
-## 💰 Monthly Cost Breakdown
+## Monthly Cost Breakdown
 
 | Service          | Provider      | Cost      |
 | ---------------- | ------------- | --------- |
@@ -186,7 +186,7 @@ If file storage were needed in the future, the system could easily integrate:
 
 ---
 
-## 📋 Database Schema
+## Database Schema
 
 The system uses MongoDB with the following collections and document structures:
 
@@ -293,11 +293,11 @@ Configurable thresholds for triggering alerts (stored in application config or d
 
 ---
 
-## ✅ Cloud Mapping Summary
+## Summary
 
-✔️ **API Hosting:** Azure App Service (Python FastAPI + GraphQL)<br>
-✔️ **Database Service:** MongoDB Atlas M0 (Free Tier, AWS-backed)<br>
-✔️ **File Storage:** Not required (all data in MongoDB documents)<br>
-✔️ **Node-RED:** Railway.app (Docker, GCP infrastructure)<br>
+ **API Hosting:** Azure App Service (Python FastAPI + GraphQL)<br>
+ **Database Service:** MongoDB Atlas M0 (Free Tier, AWS-backed)<br>
+ **File Storage:** Not required (all data in MongoDB documents)<br>
+ **Node-RED:** Railway.app (Docker, GCP infrastructure)<br>
 
 ---
