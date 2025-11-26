@@ -7,10 +7,11 @@
 
 # 🔗 Useful Links
 
-* 📊 **Dashboard (Node-RED):** [https://nodered.savimind.com/ui](https://nodered.savimind.com/ui)
+* 🎥 **YouTube Demo Video:** [Watch Demo](https://youtu.be/rAdTeCjZlCo)
+* 📊 **Dashboard (Node-RED):** [https://nodered.savimind.com/ui](https://nodered.savimind.com/ui/#!/2?socketid=JTD-NDXojd9EZ9cxAAAr)
 * 🔌 **REST + GraphQL API:** [https://industrialapi.savimind.com](https://industrialapi.savimind.com)
 * 🧪 **Health Check:** [https://industrialapi.savimind.com/api/health](https://industrialapi.savimind.com/api/health)
-* 🎥 **YouTube Demo Video:** [Watch Full Demo](https://youtu.be/rAdTeCjZlCo)
+
 
 ---
 

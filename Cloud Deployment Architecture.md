@@ -9,6 +9,10 @@
 
 Mapping of cloud services used to deploy the Smart Health Monitoring System across **Azure**, **MongoDB Atlas**, and **Railway** platforms.
 
+![Smart Health Monitoring System](screenshots/ArchSmartHealthSystem.png)
+
+![Deployed API (Azure)](screenshots/DeployedAPI-Main.png)
+
 ---
 
 ## 1. API Hosting — **Azure App Service**
