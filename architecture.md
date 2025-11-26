@@ -172,6 +172,113 @@ If file storage were needed in the future, the system could easily integrate:
 
 ---
 
+## 📋 Database Schema
+
+The system uses MongoDB with the following collections and document structures:
+
+### Collection: `patients`
+
+Stores patient profiles and current health status. Each patient has a friendly ID (e.g., P-101) and tracks their latest vital readings.
+
+**Model Reference:** `domain/models/patient.py::PatientInDB`
+
+```json
+{
+  "_id": "ObjectId",
+  "patient_id": "string (unique, e.g., 'P-101')",
+  "patient_name": "string (1-100 chars)",
+  "status": "string (OK | ALERT | CRITICAL, default: 'OK')",
+  "last_heart_rate": "integer | null (bpm, 0-300)",
+  "last_oxygen_level": "integer | null (%, 0-100)",
+  "last_body_temperature": "float | null (°C, 30.0-45.0)",
+  "last_steps": "integer | null (step count)",
+  "last_update": "datetime | null (last vital reading timestamp)",
+  "created_at": "datetime (UTC, auto-generated)"
+}
+```
+
+### Collection: `vitals`
+
+Time-series vital signs data for trend analysis. Receives data from Node-RED devices and stores normalized readings.
+
+**Model Reference:** `domain/models/vital.py::VitalInDB`
+
+```json
+{
+  "_id": "ObjectId",
+  "patient_id": "string (ref: patients.patient_id)",
+  "heart_rate": "integer (bpm, 0-300)",
+  "oxygen_level": "integer (%, 0-100)",
+  "body_temperature": "float (°C, 30.0-45.0)",
+  "steps": "integer (≥0)",
+  "timestamp": "datetime (reading time from device)",
+  "created_at": "datetime (UTC, when stored in DB)"
+}
+```
+
+### Collection: `alerts`
+
+Critical threshold alerts triggered when vital signs exceed configured thresholds.
+
+**Model Reference:** `domain/models/vital.py::AlertInDB`
+
+```json
+{
+  "_id": "ObjectId",
+  "alert_id": "string (friendly ID, e.g., 'ALT-001')",
+  "patient_id": "string (ref: patients.patient_id)",
+  "metric": "string (heart_rate | oxygen_level | body_temperature)",
+  "type": "string (HIGH | LOW)",
+  "value": "float (actual reading that triggered alert)",
+  "threshold": "float (configured threshold value)",
+  "status": "string (ACTIVE | ACKNOWLEDGED | RESOLVED, default: 'ACTIVE')",
+  "created_at": "datetime (UTC, when alert triggered)",
+  "acknowledged_at": "datetime | null (when acknowledged by staff)"
+}
+```
+
+### Collection: `users`
+
+Authentication and user management with JWT token-based security.
+
+**Model Reference:** `domain/models/user.py::UserInDB`
+
+```json
+{
+  "_id": "ObjectId",
+  "username": "string (unique, 3-50 chars)",
+  "hashed_password": "string (bcrypt hash, min 6 chars original)",
+  "is_active": "boolean (default: true)",
+  "created_at": "datetime (UTC, auto-generated)"
+}
+```
+
+### Alert Thresholds Configuration
+
+Configurable thresholds for triggering alerts (stored in application config or database).
+
+**Model Reference:** `domain/models/vital.py::ThresholdSettings`
+
+```json
+{
+  "heart_rate_high": "integer (default: 120 bpm)",
+  "heart_rate_low": "integer (default: 50 bpm)",
+  "oxygen_level_low": "integer (default: 92%)",
+  "body_temperature_high": "float (default: 38.0°C)",
+  "body_temperature_low": "float (default: 35.5°C)"
+}
+```
+
+### Indexes
+
+* `patients.patient_id`: Unique index for fast patient lookups
+* `vitals.patient_id + vitals.timestamp`: Compound index for time-series queries
+* `alerts.patient_id + alerts.created_at`: Compound index for alert history
+* `alerts.alert_id`: Unique index for friendly alert IDs
+* `users.username`: Unique index for authentication
+
+---
+
 ## ✅ Cloud Mapping Summary
 
 ✔️ **API Hosting:** Azure App Service (Python FastAPI + GraphQL)
