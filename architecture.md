@@ -9,6 +9,20 @@
 
 Mapping of cloud services used to deploy the Smart Health Monitoring System across **Azure**, **MongoDB Atlas**, and **Railway** platforms.
 
+---
+
+# 🔗 Useful Links
+
+* 🎥 **YouTube Demo Video:** [Watch Demo](https://youtu.be/rAdTeCjZlCo)
+* 📊 **Dashboard (Node-RED):** [https://nodered.savimind.com/ui](https://nodered.savimind.com/ui/#!/2?socketid=JTD-NDXojd9EZ9cxAAAr)
+* 🔌 **REST + GraphQL API:** [https://industrialapi.savimind.com](https://industrialapi.savimind.com)
+* 🧪 **Health Check:** [https://industrialapi.savimind.com/api/health](https://industrialapi.savimind.com/api/health)
+
+
+---
+
+# Images:
+
 ![Smart Health Monitoring System](screenshots/ArchSmartHealthSystem.png)
 
 ![Deployed API (Azure)](screenshots/DeployedAPI-Main.png)
